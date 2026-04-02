@@ -1,0 +1,11 @@
+node_modules
+dist
+dist-ssr
+coverage
+
+.DS_Store
+*.log
+
+.env
+.env.*.local
+
