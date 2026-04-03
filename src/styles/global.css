@@ -1,7 +1,29 @@
+:root {
+  --bg: #ffffff;
+  --text: #333333;
+  --card-bg: #f8f9fa;
+  --navbar-bg: #ffffff;
+  --border: #e5e7eb;
+  --shadow: rgba(15, 23, 42, 0.12);
+  --theme-primary: #438bed;
+  --theme-accent: #76aff2;
+}
+
+[data-theme='dark'] {
+  --bg: #1e1f22;
+  --text: #e0e0e0;
+  --card-bg: #24262b;
+  --navbar-bg: #1e1f22;
+  --border: #2b2f36;
+  --shadow: rgba(0, 0, 0, 0.35);
+  --theme-primary: #438bed;
+  --theme-accent: #76aff2;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
     Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-  background: #fff;
-  color: #111;
+  background: var(--bg);
+  color: var(--text);
 }

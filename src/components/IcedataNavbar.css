@@ -1,0 +1,150 @@
+.icedata-navbar-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 16px 20px 0;
+  background: linear-gradient(to bottom, var(--bg), color-mix(in srgb, var(--navbar-bg) 92%, transparent));
+}
+
+.icedata-navbar-card {
+  border-radius: 12px;
+  box-shadow: 0 10px 24px var(--shadow);
+  background: var(--navbar-bg);
+  border: 1px solid var(--border) !important;
+}
+
+.icedata-navbar-card .ant-card-body {
+  padding: 0 16px;
+}
+
+.icedata-navbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-height: 56px;
+}
+
+.icedata-navbar-logo {
+  flex-shrink: 0;
+  height: 30px;
+  width: auto;
+  display: block;
+}
+
+.icedata-navbar-menu-wrap {
+  margin-left: auto;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.icedata-navbar-menu {
+  width: 100%;
+  justify-content: flex-end;
+  border-bottom: none !important;
+  background: transparent !important;
+}
+
+.icedata-navbar-menu.ant-menu-horizontal > .ant-menu-item {
+  color: var(--text);
+  font-weight: 500;
+  background: transparent !important;
+}
+
+.icedata-navbar-menu.ant-menu-horizontal > .ant-menu-item-selected {
+  color: var(--theme-primary) !important;
+  background: transparent !important;
+}
+
+.icedata-navbar-menu.ant-menu-horizontal > .ant-menu-submenu {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.icedata-navbar-menu.ant-menu-horizontal > .ant-menu-item::after,
+.icedata-navbar-menu.ant-menu-horizontal > .ant-menu-submenu::after {
+  border-bottom: 2px solid transparent !important;
+}
+
+.icedata-navbar-menu.ant-menu-horizontal > .ant-menu-item:hover,
+.icedata-navbar-menu.ant-menu-horizontal > .ant-menu-item-active {
+  color: var(--theme-primary) !important;
+  background: transparent !important;
+}
+
+.icedata-navbar-menu.ant-menu-horizontal > .ant-menu-submenu:hover,
+.icedata-navbar-menu.ant-menu-horizontal > .ant-menu-submenu-active,
+.icedata-navbar-menu.ant-menu-horizontal > .ant-menu-submenu-open,
+.icedata-navbar-menu.ant-menu-horizontal > .ant-menu-submenu-selected {
+  color: var(--theme-primary) !important;
+  background: transparent !important;
+}
+
+.icedata-navbar-menu.ant-menu-horizontal > .ant-menu-item:hover::after,
+.icedata-navbar-menu.ant-menu-horizontal > .ant-menu-item-selected::after,
+.icedata-navbar-menu.ant-menu-horizontal > .ant-menu-submenu:hover::after,
+.icedata-navbar-menu.ant-menu-horizontal > .ant-menu-submenu-open::after,
+.icedata-navbar-menu.ant-menu-horizontal > .ant-menu-submenu-selected::after {
+  border-bottom-color: var(--theme-primary) !important;
+}
+
+.icedata-theme-toggle {
+  border-radius: 8px;
+  border-color: var(--border);
+  color: var(--text);
+  background: var(--card-bg);
+}
+
+.icedata-theme-toggle .anticon {
+  font-size: 16px;
+}
+
+.icedata-theme-toggle:hover,
+.icedata-theme-toggle:focus {
+  color: var(--theme-primary) !important;
+  border-color: var(--theme-accent) !important;
+}
+
+.icedata-menu-overflow-icon {
+  color: var(--text);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+[data-theme='dark'] .icedata-navbar-wrap {
+  background: linear-gradient(to bottom, var(--bg), color-mix(in srgb, var(--bg) 88%, transparent));
+}
+
+[data-theme='dark'] .icedata-navbar-card {
+  border-color: #343840 !important;
+}
+
+[data-theme='dark'] .icedata-navbar-menu.ant-menu {
+  color: var(--text);
+}
+
+[data-theme='dark'] .ant-menu-submenu-popup .ant-menu {
+  background: var(--navbar-bg) !important;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+[data-theme='dark'] .ant-menu-submenu-popup .ant-menu-item {
+  color: var(--text);
+}
+
+[data-theme='dark'] .ant-menu-submenu-popup .ant-menu-item:hover,
+[data-theme='dark'] .ant-menu-submenu-popup .ant-menu-item-active,
+[data-theme='dark'] .ant-menu-submenu-popup .ant-menu-item-selected {
+  color: var(--theme-primary) !important;
+  background: color-mix(in srgb, var(--theme-accent) 16%, transparent) !important;
+}
+
+[data-theme='dark'] .ant-menu-submenu-popup .ant-menu-item::after {
+  border-bottom: none !important;
+}
+
+[data-theme='dark'] .ant-menu-submenu-popup .ant-menu-item-selected::after {
+  border-bottom: none !important;
+}
