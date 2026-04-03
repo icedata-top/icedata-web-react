@@ -85,7 +85,7 @@ export default function IcedataNavbar() {
           <img
             className="icedata-navbar-logo"
             src="/png/icedata_logo_with_name_512x.png"
-            alt="Icedata"
+            alt="冰数据"
           />
           <div className="icedata-navbar-menu-wrap">
             <Menu

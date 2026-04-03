@@ -5,10 +5,10 @@ import './index.css';
 const { Search } = Input;
 
 const stats = [
-  { key: 'songs', title: '收录歌曲', value: '123456', suffix: '首' },
+  { key: 'songs', title: '收录歌曲', value: '554593', suffix: '首' },
   { key: 'artists', title: '收录歌手', value: '30', suffix: '位' },
-  { key: 'creators', title: '收录创作者', value: '12345', suffix: '位' },
-  { key: 'spanDays', title: '记录跨度', value: '1234', suffix: '日' },
+  { key: 'creators', title: '收录创作者', value: '101086', suffix: '位' },
+  { key: 'spanDays', title: '记录跨度', value: '543', suffix: '日' },
 ];
 
 export default function Home() {
@@ -20,7 +20,7 @@ export default function Home() {
           <img
             className="home-logo"
             src="/png/icedata_logo_512x.png"
-            alt="Icedata"
+            alt="冰数据"
           />
 
           <div className="home-search">
