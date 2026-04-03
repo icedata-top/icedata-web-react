@@ -40,20 +40,22 @@
 }
 
 .home-search-input .ant-input-group-addon .ant-btn {
-  border-color: var(--theme-primary);
-  background: var(--theme-primary);
+  color: #fff !important;
+  border-color: var(--theme-primary) !important;
+  background: var(--theme-primary) !important;
   padding-top: 0;
   padding-bottom: 0;
 }
 
 .home-search-input .ant-input-group-addon .ant-btn:hover,
 .home-search-input .ant-input-group-addon .ant-btn:focus {
-  border-color: var(--theme-accent);
-  background: var(--theme-accent);
+  color: #fff !important;
+  border-color: var(--theme-accent) !important;
+  background: var(--theme-accent) !important;
 }
 
 .home-stats-scroll {
-  margin-top: 28px;
+  margin-top: 6vh;
   width: 100%;
   max-width: 720px;
   margin-left: auto;
@@ -125,7 +127,25 @@
 }
 
 [data-theme='dark'] .home-search-input .ant-input-group-addon .ant-btn {
-  border-color: var(--theme-primary);
-  background: var(--theme-primary);
+  color: #fff !important;
+  border-color: var(--theme-primary) !important;
+  background: var(--theme-primary) !important;
+}
+
+/* 解决暗色下 placeholder 没有跟随主题的问题 */
+[data-theme='dark'] .home-search-input .ant-input::placeholder {
+  color: var(--text);
+  opacity: 0.55;
+}
+
+@media (max-width: 768px) {
+  .home-stats-scroll {
+    overflow-x: visible;
+  }
+
+  .home-stats-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 12px;
+  }
 }
 
