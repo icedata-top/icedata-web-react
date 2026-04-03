@@ -1,5 +1,5 @@
-import HelloWorld from './pages/HelloWorld.jsx';
+import Home from './pages/Home/index.jsx';
 
 export default function App() {
-  return <HelloWorld />;
+  return <Home />;
 }
