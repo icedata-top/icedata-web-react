@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Input, Spin, Statistic } from 'antd';
 import { fetchHomeOverview, HOME_API_CODE, mapHomeDataToStats } from '../../services/Home/home.api.js';
 import './index.css';
@@ -79,6 +80,10 @@ export default function Home() {
         </a>
         <span className="home-footer-sep">｜</span>
         <span className="home-footer-text">Copyright 2026</span>
+        <span className="home-footer-sep">｜</span>
+        <Link to="/about" className="home-footer-link">
+          关于冰数据
+        </Link>
       </footer>
     </div>
   );
