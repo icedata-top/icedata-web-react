@@ -24,6 +24,12 @@
   min-height: 56px;
 }
 
+.icedata-navbar-logo-link {
+  flex-shrink: 0;
+  line-height: 0;
+  text-decoration: none;
+}
+
 .icedata-navbar-logo {
   flex-shrink: 0;
   height: 30px;

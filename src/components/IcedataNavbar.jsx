@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Card, Menu } from 'antd';
 import { MoonOutlined, SunOutlined } from '@ant-design/icons';
+import { getMenuKeyFromPathname, MENU_KEY_TO_PATH } from '../routes/menuPaths.js';
 import './IcedataNavbar.css';
 
 const menuItems = [
@@ -59,7 +61,14 @@ const menuItems = [
 ];
 
 export default function IcedataNavbar() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isDark, setIsDark] = useState(false);
+
+  const selectedKeys = useMemo(() => {
+    const key = getMenuKeyFromPathname(location.pathname);
+    return key ? [key] : [];
+  }, [location.pathname]);
 
   useEffect(() => {
     const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -82,18 +91,25 @@ export default function IcedataNavbar() {
     <header className="icedata-navbar-wrap">
       <Card className="icedata-navbar-card" bodyStyle={{ padding: '0 16px' }}>
         <div className="icedata-navbar-inner">
-          <img
-            className="icedata-navbar-logo"
-            src="/png/icedata_logo_with_name_512x.png"
-            alt="冰数据"
-          />
+          <Link to="/" className="icedata-navbar-logo-link" aria-label="冰数据首页">
+            <img
+              className="icedata-navbar-logo"
+              src="/png/icedata_logo_with_name_512x.png"
+              alt="冰数据"
+            />
+          </Link>
           <div className="icedata-navbar-menu-wrap">
             <Menu
               mode="horizontal"
-              defaultSelectedKeys={['home']}
+              selectedKeys={selectedKeys}
               items={menuItems}
               overflowedIndicator={<span className="icedata-menu-overflow-icon">...</span>}
               className="icedata-navbar-menu"
+              onClick={({ key }) => {
+                if (String(key).startsWith('link_')) return;
+                const path = MENU_KEY_TO_PATH[key];
+                if (path) navigate(path);
+              }}
             />
           </div>
           <Button

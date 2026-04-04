@@ -27,3 +27,27 @@ body {
   background: var(--bg);
   color: var(--text);
 }
+
+.page-result {
+  padding: 48px 20px 80px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* Result 标题/副标题跟随主题变量，避免深色模式下仍为默认深色字 */
+.page-result .ant-result-title {
+  color: var(--text) !important;
+}
+
+.page-result .ant-result-subtitle {
+  color: var(--text) !important;
+  opacity: 0.72;
+}
+
+.page-result-illustration {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  margin: 0 auto;
+}
