@@ -1,16 +1,36 @@
-import { Input, Statistic } from 'antd';
+import { useEffect, useState } from 'react';
+import { Input, Spin, Statistic } from 'antd';
+import { fetchHomeOverview, HOME_API_CODE, mapHomeDataToStats } from '../../services/Home/home.api.js';
 import './index.css';
 
 const { Search } = Input;
 
-const stats = [
-  { key: 'songs', title: '收录歌曲', value: '554593', suffix: '首' },
-  { key: 'artists', title: '收录歌手', value: '30', suffix: '位' },
-  { key: 'creators', title: '收录创作者', value: '101086', suffix: '位' },
-  { key: 'spanDays', title: '记录跨度', value: '543', suffix: '日' },
-];
-
 export default function Home() {
+  const [stats, setStats] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    setLoading(true);
+    fetchHomeOverview()
+      .then((res) => {
+        if (cancelled) return;
+        if (res.code === HOME_API_CODE.OK && res.data) {
+          setStats(mapHomeDataToStats(res.data));
+        } else {
+          setStats([]);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <div className="home-page">
       <section className="home-hero">
@@ -32,18 +52,20 @@ export default function Home() {
       </section>
 
       <section className="home-stats-scroll" aria-label="数据概览">
-        <div className="home-stats-row">
-          {stats.map((item) => (
-            <div key={item.key} className="home-stat-item">
-              <Statistic
-                title={item.title}
-                value={item.value}
-                suffix={item.suffix}
-                valueStyle={{ color: 'var(--text)' }}
-              />
-            </div>
-          ))}
-        </div>
+        <Spin spinning={loading}>
+          <div className="home-stats-row">
+            {stats.map((item) => (
+              <div key={item.key} className="home-stat-item">
+                <Statistic
+                  title={item.title}
+                  value={item.value}
+                  suffix={item.suffix}
+                  valueStyle={{ color: 'var(--text)' }}
+                />
+              </div>
+            ))}
+          </div>
+        </Spin>
       </section>
 
       <footer className="home-footer">
@@ -61,4 +83,3 @@ export default function Home() {
     </div>
   );
 }
-

@@ -63,6 +63,14 @@
   overflow-x: auto;
 }
 
+.home-stats-scroll .ant-spin-nested-loading {
+  width: 100%;
+}
+
+.home-stats-scroll .ant-spin-container {
+  min-height: 100px;
+}
+
 .home-stats-row {
   min-width: 0;
   display: grid;
