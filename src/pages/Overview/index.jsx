@@ -4,6 +4,7 @@ import { FilterOutlined } from '@ant-design/icons';
 import { Button, Card, Drawer, Spin, Typography } from 'antd';
 import OverviewFilter from './components/OverviewFilter.jsx';
 import OverviewTrendChart from './components/OverviewTrendChart.jsx';
+import OverviewPartitionPieChart from './components/OverviewPartitionPieChart.jsx';
 import IndicatorCell from './components/IndicatorCell.jsx';
 import { fetchOverviewIndicators, OVERVIEW_API_CODE } from '../../services/Overview/overview.api.js';
 import './index.css';
@@ -141,11 +142,7 @@ export default function Overview() {
 
           <OverviewTrendChart trend={payload?.trend ?? []} />
 
-          <Card className="overview-panel overview-panel--mock" bordered={false} title="分布（占位）">
-            <div className="overview-mock-block overview-mock-block--tall" role="presentation">
-              <Text type="secondary">此处为分布类图表占位（MOCK）。</Text>
-            </div>
-          </Card>
+          <OverviewPartitionPieChart rows={payload?.partitionSubmissions ?? []} />
 
           <Card className="overview-panel overview-panel--mock" bordered={false} title="明细表（占位）">
             <div className="overview-mock-block" role="presentation">

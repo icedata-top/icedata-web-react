@@ -24,11 +24,24 @@ export const OVERVIEW_API_CODE = {
  */
 
 /**
+ * 二级分区投稿条数（MOCK / 将来与后端对齐）
+ * @typedef {{ typeId: number, count: number }} OverviewPartitionSubmission
+ */
+
+/**
  * @typedef {Object} OverviewIndicatorsPayload
  * @property {string} startDate
  * @property {string} endDate
  * @property {OverviewIndicator[]} indicators
  * @property {OverviewTrendDay[]} [trend] 按天的趋势序列（MOCK）
+ * @property {OverviewPartitionSubmission[]} [partitionSubmissions] 各分区投稿量
+ */
+
+/**
+ * @typedef {Object} OverviewPartitionSubmissionsPayload
+ * @property {string} startDate
+ * @property {string} endDate
+ * @property {OverviewPartitionSubmission[]} rows
  */
 
 /**
@@ -101,6 +114,42 @@ export function buildMockTrendForRange(startDate, endDate) {
 /** 固定区间示例数据（约两周），便于单独调试或 Storybook */
 export const MOCK_INDICATORS_TREND = buildMockTrendForRange('2026-03-21', '2026-04-03');
 
+/** MOCK：各二级分区投稿量（type_id → 投稿数） */
+const MOCK_PARTITION_SUBMISSIONS = [
+  { typeId: 30, count: 469 },
+  { typeId: 21, count: 418 },
+  { typeId: 31, count: 85 },
+  { typeId: 28, count: 72 },
+  { typeId: 47, count: 63 },
+  { typeId: 27, count: 62 },
+  { typeId: 130, count: 44 },
+  { typeId: 25, count: 43 },
+  { typeId: 59, count: 40 },
+  { typeId: 242, count: 27 },
+];
+
+function cloneMockPartitionSubmissions() {
+  return MOCK_PARTITION_SUBMISSIONS.map((row) => ({ ...row }));
+}
+
+/**
+ * 获取各二级分区投稿数量（MOCK）
+ * @param {string} startDate YYYY-MM-DD
+ * @param {string} endDate YYYY-MM-DD
+ * @returns {Promise<ApiResult<OverviewPartitionSubmissionsPayload>>}
+ */
+export function fetchOverviewPartitionSubmissions(startDate, endDate) {
+  return Promise.resolve({
+    code: OVERVIEW_API_CODE.OK,
+    message: 'success',
+    data: {
+      startDate,
+      endDate,
+      rows: cloneMockPartitionSubmissions(),
+    },
+  });
+}
+
 /**
  * 根据日期范围拉取总览指标（MOCK）
  * @param {string} startDate YYYY-MM-DD
@@ -113,6 +162,7 @@ export function fetchOverviewIndicators(startDate, endDate) {
     endDate,
     indicators: MOCK_INDICATORS_BASE.map((row) => ({ ...row })),
     trend: buildMockTrendForRange(startDate, endDate),
+    partitionSubmissions: cloneMockPartitionSubmissions(),
   };
 
   return Promise.resolve({

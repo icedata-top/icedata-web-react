@@ -1,27 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Card, Tabs, Typography } from 'antd';
 import VChart from '@visactor/vchart';
+import { useDocThemeDark } from '../../../hooks/useDocThemeDark.js';
 import './OverviewTrendChart.css';
 
 const { Text } = Typography;
-
-/** 与导航栏一致：html[data-theme="dark"] */
-function useDocThemeDark() {
-  const [isDark, setIsDark] = useState(
-    () => typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'dark',
-  );
-
-  useEffect(() => {
-    const el = document.documentElement;
-    const sync = () => setIsDark(el.getAttribute('data-theme') === 'dark');
-    sync();
-    const mo = new MutationObserver(sync);
-    mo.observe(el, { attributes: true, attributeFilter: ['data-theme'] });
-    return () => mo.disconnect();
-  }, []);
-
-  return isDark;
-}
 
 /** @typedef {{ date: string, indicators: Record<string, number> }} TrendDay */
 

@@ -1,0 +1,47 @@
+.overview-panel--partition .ant-card-head {
+  border-bottom: none !important;
+  min-height: 48px;
+}
+
+.overview-panel--partition .ant-card-head-title {
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 0 4px;
+  color: var(--text) !important;
+}
+
+.overview-panel--partition .ant-card-body {
+  padding-top: 8px;
+}
+
+.overview-partition-pie-inner {
+  min-width: 0;
+}
+
+.overview-partition-pie-host {
+  width: 100%;
+  min-height: 320px;
+  height: 400px;
+  background: transparent;
+}
+
+.overview-partition-pie-host canvas {
+  background: transparent !important;
+}
+
+.overview-partition-pie-empty {
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px 16px;
+  border-radius: 6px;
+  border: 1px dashed var(--border);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme='dark'] .overview-partition-pie-empty {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: #343840;
+}
