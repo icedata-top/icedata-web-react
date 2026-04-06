@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
-import { Card, Spin, Typography } from 'antd';
+import { FilterOutlined } from '@ant-design/icons';
+import { Button, Card, Drawer, Spin, Typography } from 'antd';
 import OverviewFilter from './components/OverviewFilter.jsx';
 import IndicatorCell from './components/IndicatorCell.jsx';
 import { fetchOverviewIndicators, OVERVIEW_API_CODE } from '../../services/Overview/overview.api.js';
@@ -8,14 +9,35 @@ import './index.css';
 
 const { Text } = Typography;
 
+/** 与 CSS 中 @media 一致：小于此宽度视为移动端，筛选走抽屉 */
+const MOBILE_MAX_PX = 767;
+
 function defaultRange() {
   return [dayjs().subtract(6, 'day').startOf('day'), dayjs().endOf('day')];
+}
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth <= MOBILE_MAX_PX : false,
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${MOBILE_MAX_PX}px)`);
+    const sync = () => setIsMobile(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+
+  return isMobile;
 }
 
 export default function Overview() {
   const [range, setRange] = useState(() => defaultRange());
   const [loading, setLoading] = useState(false);
   const [payload, setPayload] = useState(null);
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const load = useCallback((startDate, endDate) => {
     setLoading(true);
@@ -38,38 +60,102 @@ export default function Overview() {
     }
   }, [range, load]);
 
-  const onRangeChange = (dates) => {
+  useEffect(() => {
+    if (!isMobile) {
+      setFilterDrawerOpen(false);
+    }
+  }, [isMobile]);
+
+  const handleRangeChange = (dates) => {
     setRange(dates);
+    if (isMobile) {
+      setFilterDrawerOpen(false);
+    }
   };
+
+  const filterBlock = <OverviewFilter value={range} onRangeChange={handleRangeChange} />;
 
   return (
     <div className="overview-page">
-      <div className="overview-stack">
-        <Card className="overview-panel" bordered={false}>
-          <OverviewFilter value={range} onRangeChange={onRangeChange} />
-        </Card>
+      <div className="overview-layout">
+        {!isMobile && (
+          <aside className="overview-sidebar" aria-label="筛选条件">
+            <Card className="overview-panel overview-panel--filter" bordered={false} title="筛选条件">
+              {filterBlock}
+            </Card>
+          </aside>
+        )}
 
-        <Card className="overview-panel overview-panel--metrics" bordered={false} title="指标数值">
-          <section className="overview-metrics" aria-live="polite">
-            <Spin spinning={loading}>
-              {!range?.[0] || !range?.[1] ? (
-                <Text type="secondary">请选择日期范围以查看指标。</Text>
-              ) : payload ? (
-                <div className="overview-meta">
-                  <div className="overview-indicator-grid">
-                    {payload.indicators.map((row) => (
-                      <div key={row.name} className="overview-indicator-item">
-                        <IndicatorCell data={row} precision={1} />
-                      </div>
-                    ))}
+        {isMobile && (
+          <>
+            <div className="overview-mobile-filter-bar">
+              <Button
+                type="default"
+                icon={<FilterOutlined />}
+                onClick={() => setFilterDrawerOpen(true)}
+                aria-expanded={filterDrawerOpen}
+                aria-controls="overview-filter-drawer"
+              >
+                筛选条件
+              </Button>
+            </div>
+            <Drawer
+              id="overview-filter-drawer"
+              title="筛选条件"
+              placement="left"
+              width={320}
+              open={filterDrawerOpen}
+              onClose={() => setFilterDrawerOpen(false)}
+              destroyOnClose={false}
+              className="overview-filter-drawer"
+              styles={{ body: { paddingTop: 12 } }}
+            >
+              {filterBlock}
+            </Drawer>
+          </>
+        )}
+
+        <div className="overview-main-scroll">
+          <Card className="overview-panel overview-panel--metrics" bordered={false} title="指标数值">
+            <section className="overview-metrics" aria-live="polite">
+              <Spin spinning={loading}>
+                {!range?.[0] || !range?.[1] ? (
+                  <Text type="secondary">请选择日期范围以查看指标。</Text>
+                ) : payload ? (
+                  <div className="overview-meta">
+                    <div className="overview-indicator-grid">
+                      {payload.indicators.map((row) => (
+                        <div key={row.name} className="overview-indicator-item">
+                          <IndicatorCell data={row} precision={1} />
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <Text type="secondary">暂无数据</Text>
-              )}
-            </Spin>
-          </section>
-        </Card>
+                ) : (
+                  <Text type="secondary">暂无数据</Text>
+                )}
+              </Spin>
+            </section>
+          </Card>
+
+          <Card className="overview-panel overview-panel--mock" bordered={false} title="趋势图（占位）">
+            <div className="overview-mock-block" role="presentation">
+              <Text type="secondary">此处为趋势图占位（MOCK），后续接入图表。</Text>
+            </div>
+          </Card>
+
+          <Card className="overview-panel overview-panel--mock" bordered={false} title="分布（占位）">
+            <div className="overview-mock-block overview-mock-block--tall" role="presentation">
+              <Text type="secondary">此处为分布类图表占位（MOCK）。</Text>
+            </div>
+          </Card>
+
+          <Card className="overview-panel overview-panel--mock" bordered={false} title="明细表（占位）">
+            <div className="overview-mock-block" role="presentation">
+              <Text type="secondary">此处为明细表格占位（MOCK）。</Text>
+            </div>
+          </Card>
+        </div>
       </div>
     </div>
   );

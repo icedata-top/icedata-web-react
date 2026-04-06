@@ -1,14 +1,91 @@
 .overview-page {
-  padding: 24px 20px 48px;
+  padding: 24px 20px 32px;
   color: var(--text);
+  box-sizing: border-box;
 }
 
-.overview-stack {
-  max-width: 1080px;
+/* 左：筛选（桌面 sticky）；右：可滚动内容区 */
+.overview-layout {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 24px;
+  max-width: 1200px;
   margin: 0 auto;
+  min-height: calc(100vh - 72px);
+}
+
+.overview-sidebar {
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 320px;
+  position: sticky;
+  top: 16px;
+  align-self: flex-start;
+  z-index: 1;
+}
+
+.overview-panel--filter {
+  width: 100%;
+}
+
+.overview-panel--filter .ant-card-body {
+  padding-top: 16px;
+}
+
+.overview-main-scroll {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-height: calc(100vh - 56px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 2px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 仅 isMobile 时挂载：顶部筛选入口 */
+.overview-mobile-filter-bar {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 4px 0 10px;
+  margin: -4px 0 0;
+  background: linear-gradient(to bottom, var(--bg) 72%, transparent);
+}
+
+@media (max-width: 767px) {
+  /*
+   * 列方向时交叉轴为水平方向；若沿用 align-items: flex-start，
+   * 子项宽度会按内容收缩，正文卡片会被压得很窄。移动端改为拉伸占满视口宽。
+   */
+  .overview-layout {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    min-height: calc(100vh - 64px);
+  }
+
+  .overview-main-scroll {
+    width: 100%;
+    max-width: 100%;
+    max-height: none;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .overview-mobile-filter-bar {
+    width: 100%;
+  }
+}
+
+.overview-filter-drawer .ant-drawer-content-wrapper {
+  max-width: min(320px, calc(100vw - 24px));
 }
 
 .overview-panel.ant-card {
@@ -47,6 +124,17 @@
   padding: 12px 0 4px;
 }
 
+.overview-panel--mock .ant-card-head-title {
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 0 4px;
+}
+
+.overview-panel--mock .ant-card-head {
+  border-bottom: none !important;
+  min-height: 44px;
+}
+
 [data-theme='dark'] .overview-panel {
   border-color: #343840 !important;
 }
@@ -56,6 +144,10 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
+}
+
+.overview-filter .ant-picker {
+  max-width: 100%;
 }
 
 .overview-metrics {
@@ -71,6 +163,27 @@
 .overview-range-hint {
   display: block;
   font-size: 13px;
+}
+
+.overview-mock-block {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px;
+  border-radius: 6px;
+  border: 1px dashed var(--border);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme='dark'] .overview-mock-block {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: #343840;
+}
+
+.overview-mock-block--tall {
+  min-height: 200px;
 }
 
 .overview-indicator-grid {
