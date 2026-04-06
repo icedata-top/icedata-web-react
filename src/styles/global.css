@@ -73,6 +73,37 @@ body {
   border-color: #343840;
 }
 
+/* Ant Design 日期面板（挂到 body）：深色与页面变量一致 */
+[data-theme='dark'] .ant-picker-dropdown .ant-picker-panel-container {
+  background: var(--card-bg);
+  border-color: #343840;
+  color: var(--text);
+}
+
+[data-theme='dark'] .ant-picker-dropdown .ant-picker-header,
+[data-theme='dark'] .ant-picker-dropdown .ant-picker-content th {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+[data-theme='dark'] .ant-picker-dropdown .ant-picker-cell {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme='dark'] .ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+  border-color: var(--theme-primary);
+}
+
+[data-theme='dark'] .ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner,
+[data-theme='dark'] .ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-start .ant-picker-cell-inner,
+[data-theme='dark'] .ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-end .ant-picker-cell-inner {
+  background: var(--theme-primary);
+  color: #fff;
+}
+
+[data-theme='dark'] .ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-in-range::before {
+  background: rgba(67, 139, 237, 0.2);
+}
+
 .page-result {
   padding: 48px 20px 80px;
   max-width: 720px;

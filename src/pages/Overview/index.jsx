@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import { FilterOutlined } from '@ant-design/icons';
 import { Button, Card, Drawer, Spin, Typography } from 'antd';
 import OverviewFilter from './components/OverviewFilter.jsx';
+import OverviewTrendChart from './components/OverviewTrendChart.jsx';
 import IndicatorCell from './components/IndicatorCell.jsx';
 import { fetchOverviewIndicators, OVERVIEW_API_CODE } from '../../services/Overview/overview.api.js';
 import './index.css';
@@ -138,11 +139,7 @@ export default function Overview() {
             </section>
           </Card>
 
-          <Card className="overview-panel overview-panel--mock" bordered={false} title="趋势图（占位）">
-            <div className="overview-mock-block" role="presentation">
-              <Text type="secondary">此处为趋势图占位（MOCK），后续接入图表。</Text>
-            </div>
-          </Card>
+          <OverviewTrendChart trend={payload?.trend ?? []} />
 
           <Card className="overview-panel overview-panel--mock" bordered={false} title="分布（占位）">
             <div className="overview-mock-block overview-mock-block--tall" role="presentation">

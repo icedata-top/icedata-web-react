@@ -29,6 +29,14 @@
   width: 100%;
 }
 
+.overview-panel--filter .ant-card-head {
+  border-bottom: none !important;
+}
+
+.overview-panel--filter .ant-card-head-title {
+  color: var(--text) !important;
+}
+
 .overview-panel--filter .ant-card-body {
   padding-top: 16px;
 }
@@ -113,6 +121,10 @@
   background: transparent !important;
 }
 
+.overview-panel .ant-card-head-title {
+  color: var(--text) !important;
+}
+
 .overview-panel--metrics .ant-card-head {
   border-bottom: none !important;
   min-height: 48px;
@@ -148,6 +160,54 @@
 
 .overview-filter .ant-picker {
   max-width: 100%;
+}
+
+/* 日期范围：与页面主题一致 */
+.overview-filter .ant-picker,
+.overview-filter-drawer .ant-picker {
+  background: var(--card-bg);
+  border-color: var(--border);
+}
+
+.overview-filter .ant-picker-input > input,
+.overview-filter-drawer .ant-picker-input > input {
+  color: var(--text);
+}
+
+.overview-filter .ant-picker-input > input::placeholder,
+.overview-filter-drawer .ant-picker-input > input::placeholder {
+  color: var(--text);
+  opacity: 0.4;
+}
+
+.overview-filter .ant-picker-separator,
+.overview-filter-drawer .ant-picker-separator,
+.overview-filter .ant-picker-suffix,
+.overview-filter-drawer .ant-picker-suffix {
+  color: var(--text);
+  opacity: 0.45;
+}
+
+[data-theme='dark'] .overview-filter .ant-picker,
+[data-theme='dark'] .overview-filter-drawer .ant-picker {
+  background: var(--card-bg) !important;
+  border-color: #343840 !important;
+}
+
+[data-theme='dark'] .overview-filter .ant-picker-input > input,
+[data-theme='dark'] .overview-filter-drawer .ant-picker-input > input {
+  color: var(--text) !important;
+}
+
+[data-theme='dark'] .overview-filter .ant-picker-active-bar,
+[data-theme='dark'] .overview-filter-drawer .ant-picker-active-bar {
+  background: var(--theme-primary);
+}
+
+[data-theme='dark'] .overview-filter .ant-picker-input > input::placeholder,
+[data-theme='dark'] .overview-filter-drawer .ant-picker-input > input::placeholder {
+  color: rgba(255, 255, 255, 0.35) !important;
+  opacity: 1;
 }
 
 .overview-metrics {
