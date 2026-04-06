@@ -17,28 +17,28 @@ icedata-web-react/
 ├── package-lock.json
 ├── vite.config.js
 ├── public/
-│   └── png/
-│       ├── icedata_logo_512x.png              # 站点图标 / 首页 logo（无字方形）
-│       └── icedata_logo_with_name_512x.png    # 导航栏 logo（含名称）
+│   ├── png/                   # Logo 等位图
+│   └── svg/                   # unDraw 等插图
 ├── src/
 │   ├── main.jsx               # React 挂载、全局样式入口
-│   ├── App.jsx                # 根组件（当前渲染首页）
+│   ├── App.jsx                # 根组件与路由
 │   ├── components/
-│   │   ├── IcedataNavbar.jsx  # 顶栏导航
+│   │   ├── IcedataNavbar.jsx
 │   │   └── IcedataNavbar.css
 │   ├── pages/
 │   │   ├── Home/
-│   │   │   ├── index.jsx      # 首页
-│   │   │   └── index.css
-│   │   └── HelloWorld.jsx     # 示例页（可选）
+│   │   ├── About/
+│   │   ├── Overview/
+│   │   └── …
+│   ├── services/              # API / MOCK
 │   └── styles/
-│       └── global.css         # 主题 CSS 变量（浅色 / 深色）
-└── tests/                     # 测试目录（占位）
+│       └── global.css         # 全局主题与卡片变量
+└── tests/
 ```
 
 ## 配色方案
 
-配色在 `src/styles/global.css` 中通过 **CSS 自定义属性** 定义，浅色为 `:root`，深色为根节点带 `[data-theme='dark']`（与导航栏主题切换一致）。**品牌色在深浅主题下相同**，其余为界面底色与中性色。
+配色在 `src/styles/global.css` 中通过 **CSS 自定义属性** 定义，浅色为 `:root`，深色为根节点带 `[data-theme='dark']`（与导航栏主题切换一致）。**品牌色在深浅主题下相同**。
 
 ### 品牌色（冰数据）
 
@@ -51,28 +51,44 @@ icedata-web-react/
 
 | 变量 | 色值 | 典型用途 |
 |------|------|----------|
-| `--bg` | `#ffffff` | 页面背景 |
+| `--bg` | `#f4f4f4` | 页面主背景 |
+| `--bg-hover` | `#ffffff` | 卡片、可悬停表面在 pointer 悬停时的背景 |
 | `--text` | `#333333` | 正文与标题文字 |
-| `--card-bg` | `#f8f9fa` | 卡片、输入区底色等 |
-| `--navbar-bg` | `#ffffff` | 导航栏卡片背景 |
+| `--card-bg` | `#ffffff` | 表单控件、次级块背景等 |
+| `--navbar-bg` | `#f4f4f4` | 导航栏卡片、总览卡片等默认表面背景（与 `--bg` 一致，悬停再用 `--bg-hover` 提亮） |
 | `--border` | `#e5e7eb` | 边框、分割线 |
-| `--shadow` | `rgba(15, 23, 42, 0.12)` | 阴影 |
+| `--shadow` | `rgba(15, 23, 42, 0.12)` | **悬停卡片阴影**等较重阴影的基准色 |
 
 ### 深色主题（`[data-theme='dark']`）
 
 | 变量 | 色值 | 典型用途 |
 |------|------|----------|
-| `--bg` | `#1E1F22` | 页面背景 |
+| `--bg` | `#1E1F22` | 页面主背景 |
+| `--bg-hover` | `#27282D` | 卡片等表面悬停背景 |
 | `--text` | `#e0e0e0` | 正文与标题文字 |
-| `--card-bg` | `#24262b` | 卡片、输入区底色等 |
-| `--navbar-bg` | `#1E1F22` | 导航栏区域背景 |
+| `--card-bg` | `#24262b` | 表单控件、次级块背景等 |
+| `--navbar-bg` | `#1E1F22` | 导航栏卡片、总览卡片等默认表面背景 |
 | `--border` | `#2b2f36` | 边框 |
-| `--shadow` | `rgba(0, 0, 0, 0.35)` | 阴影 |
+| `--shadow` | `rgba(0, 0, 0, 0.35)` | 悬停卡片阴影的基准色 |
+
+### 卡片与阴影（全局）
+
+| 变量 | 说明 |
+|------|------|
+| `--radius-card` | 卡片圆角（默认 `8px`，小于早期 `12px`） |
+| `--shadow-card` | **默认**较轻、较淡的阴影 |
+| `--shadow-card-hover` | **悬停**时加深阴影（与原先「常显重阴影」一致的量级） |
+
+导航栏 `Card`、总览页 `Card` 等使用上述变量，并在 `:hover` 时切换为 `--shadow-card-hover` 与 `--bg-hover`。可选工具类：`.app-card-surface` / `.app-card-surface:hover`（定义在 `global.css`）。
+
+深色下部分卡片边框仍会使用组件级 `#343840`（与导航栏一致），以保证与深灰背景对比度。
+
+浅色下导航条外层背景与 `--bg` 一致，不再使用向白色混合的渐变，避免出现卡片背后类似 `#fafafa` 的色带；Ant Design `Card` 的默认填充色已通过局部样式覆盖为 `var(--navbar-bg)`。
 
 ### 使用约定
 
-- 新增样式时优先使用 `var(--theme-primary)`、`var(--text)` 等变量，避免写死十六进制，以便深浅主题一致切换。
-- 若需与 Ant Design 组件配色对齐，可在局部用同一套变量覆盖组件样式（见 `IcedataNavbar.css`、`pages/Home/index.css`）。
+- 新增样式时优先使用 `var(--theme-primary)`、`var(--text)`、`var(--bg-hover)` 等变量。
+- 新建「卡片式」块时优先复用 `--radius-card`、`--shadow-card`、`--shadow-card-hover`，避免写死圆角与阴影。
 
 ## 术语约定
 

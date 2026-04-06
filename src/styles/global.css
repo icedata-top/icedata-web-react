@@ -1,23 +1,36 @@
 :root {
-  --bg: #ffffff;
+  /* 页面与层级表面 */
+  --bg: #f4f4f4;
+  --bg-hover: #ffffff;
   --text: #333333;
-  --card-bg: #f8f9fa;
-  --navbar-bg: #ffffff;
+  /* 表单/输入区等需与白底对比时仍用白 */
+  --card-bg: #ffffff;
+  /* 导航栏、总览等「卡片」默认与页面主色一致，悬停再用 --bg-hover 提亮 */
+  --navbar-bg: #fafafa;
   --border: #e5e7eb;
   --shadow: rgba(15, 23, 42, 0.12);
   --theme-primary: #438bed;
   --theme-accent: #76aff2;
+
+  /* 卡片：较小圆角；默认轻阴影，悬停加重（与导航栏、总览等共用） */
+  --radius-card: 8px;
+  --shadow-card: 0 1px 8px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-card-hover: 0 10px 24px var(--shadow);
 }
 
 [data-theme='dark'] {
   --bg: #1e1f22;
+  --bg-hover: #27282d;
   --text: #e0e0e0;
   --card-bg: #24262b;
-  --navbar-bg: #1e1f22;
+  --navbar-bg: #212226;
   --border: #2b2f36;
   --shadow: rgba(0, 0, 0, 0.35);
   --theme-primary: #438bed;
   --theme-accent: #76aff2;
+
+  --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-card-hover: 0 10px 24px var(--shadow);
 }
 
 body {
@@ -28,13 +41,35 @@ body {
   color: var(--text);
 }
 
+/**
+ * 通用卡片表面（可选类名）：默认轻阴影 + 小圆角，悬停加深阴影并切换为 --bg-hover
+ */
+.app-card-surface {
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  background: var(--navbar-bg);
+  border: 1px solid var(--border);
+  transition:
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.app-card-surface:hover {
+  box-shadow: var(--shadow-card-hover);
+  background: var(--bg-hover);
+}
+
+[data-theme='dark'] .app-card-surface {
+  border-color: #343840;
+}
+
 .page-result {
   padding: 48px 20px 80px;
   max-width: 720px;
   margin: 0 auto;
 }
 
-/* Result 标题/副标题跟随主题变量，避免深色模式下仍为默认深色字 */
 .page-result .ant-result-title {
   color: var(--text) !important;
 }

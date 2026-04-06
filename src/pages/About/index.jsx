@@ -32,19 +32,13 @@ export default function About() {
         </section>
 
         <div className="about-stack">
-          <section className="about-section" aria-labelledby="about-mission">
-            <h2 id="about-mission" className="about-section-title">
-              我们做什么
-            </h2>
+          <section className="about-section" aria-label="我们做什么">
             <p className="about-section-text">
               组织持续汇聚、清洗与分析虚拟歌手相关的投稿数据，并通过 Web 应用、ChatBI 智能对话与数据可视化视频等形式，把数据洞察交付给创作者与爱好者。技术路线在演进，目标不变：让公开可得的投稿数据更容易被理解与使用。
             </p>
           </section>
 
-          <section className="about-section" aria-labelledby="about-links">
-            <h2 id="about-links" className="about-section-title">
-              找到我们
-            </h2>
+          <section className="about-section" aria-label="找到我们">
             <ul className="about-contact-row">
               <li>
                 <a
@@ -89,10 +83,7 @@ export default function About() {
             </ul>
           </section>
 
-          <section className="about-section" aria-labelledby="about-credits">
-            <h2 id="about-credits" className="about-section-title">
-              技术与素材
-            </h2>
+          <section className="about-section" aria-label="技术与素材">
             <p className="about-section-text">
               本前端使用 <strong>Ant Design</strong>；数据可视化计划采用 <strong>VChart</strong>。部分插图来自 <strong>unDraw</strong>（开源插图，可按许可使用与再创作）。
             </p>

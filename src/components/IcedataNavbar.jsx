@@ -55,6 +55,14 @@ const menuItems = [
           </a>
         ),
       },
+      {
+        key: 'link_vcpedia',
+        label: (
+          <a href="https://www.vcpedia.cn/" target="_blank" rel="noreferrer">
+            VCpedia.cn
+          </a>
+        ),
+      },
     ],
   },
   { key: 'about', label: '关于' },
