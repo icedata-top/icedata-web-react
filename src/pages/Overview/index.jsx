@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { Card, Spin, Typography } from 'antd';
 import OverviewFilter from './components/OverviewFilter.jsx';
+import IndicatorCell from './components/IndicatorCell.jsx';
 import { fetchOverviewIndicators, OVERVIEW_API_CODE } from '../../services/Overview/overview.api.js';
 import './index.css';
 
@@ -48,30 +49,20 @@ export default function Overview() {
           <OverviewFilter value={range} onRangeChange={onRangeChange} />
         </Card>
 
-        <Card className="overview-panel" bordered={false}>
+        <Card className="overview-panel overview-panel--metrics" bordered={false} title="指标数值">
           <section className="overview-metrics" aria-live="polite">
             <Spin spinning={loading}>
               {!range?.[0] || !range?.[1] ? (
                 <Text type="secondary">请选择日期范围以查看指标。</Text>
               ) : payload ? (
                 <div className="overview-meta">
-                  <Text type="secondary" className="overview-range-hint">
-                    {payload.startDate} ～ {payload.endDate}
-                  </Text>
-                  <ul className="overview-indicator-list">
+                  <div className="overview-indicator-grid">
                     {payload.indicators.map((row) => (
-                      <li key={row.name} className="overview-indicator-item">
-                        <span className="overview-indicator-name">{row.name}</span>
-                        <span className="overview-indicator-value">{row.value}</span>
-                        {row.yoy != null && (
-                          <span className="overview-indicator-delta">同比 {formatRatio(row.yoy)}</span>
-                        )}
-                        {row.dod != null && (
-                          <span className="overview-indicator-delta">环比 {formatRatio(row.dod)}</span>
-                        )}
-                      </li>
+                      <div key={row.name} className="overview-indicator-item">
+                        <IndicatorCell data={row} precision={1} />
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               ) : (
                 <Text type="secondary">暂无数据</Text>
@@ -82,8 +73,4 @@ export default function Overview() {
       </div>
     </div>
   );
-}
-
-function formatRatio(n) {
-  return `${(n * 100).toFixed(1)}%`;
 }

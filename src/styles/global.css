@@ -16,6 +16,11 @@
   --radius-card: 8px;
   --shadow-card: 0 1px 8px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
   --shadow-card-hover: 0 10px 24px var(--shadow);
+
+  /* 同环比涨跌：上升红、下降绿（与 A 股等常见行情色一致） */
+  --trend-up: #cf1322;
+  --trend-down: #3f8600;
+  --trend-flat: #8c8c8c;
 }
 
 [data-theme='dark'] {
@@ -31,6 +36,10 @@
 
   --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.2);
   --shadow-card-hover: 0 10px 24px var(--shadow);
+
+  --trend-up: #ff7875;
+  --trend-down: #95de64;
+  --trend-flat: #8c8c8c;
 }
 
 body {

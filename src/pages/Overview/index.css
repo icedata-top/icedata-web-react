@@ -36,6 +36,17 @@
   background: transparent !important;
 }
 
+.overview-panel--metrics .ant-card-head {
+  border-bottom: none !important;
+  min-height: 48px;
+}
+
+.overview-panel--metrics .ant-card-head-title {
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 0 4px;
+}
+
 [data-theme='dark'] .overview-panel {
   border-color: #343840 !important;
 }
@@ -62,43 +73,32 @@
   font-size: 13px;
 }
 
-.overview-indicator-list {
-  margin: 0;
-  padding-left: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.overview-indicator-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 12px 20px;
+  align-items: start;
 }
 
+/* 接近正方形容器；竖线 + 与两侧留白（首项无竖线） */
 .overview-indicator-item {
+  box-sizing: border-box;
+  aspect-ratio: 1;
+  min-width: 0;
+  width: 100%;
+  max-width: min(100%, 200px);
+  justify-self: center;
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 10px 16px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 15px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px 8px 0;
 }
 
-.overview-indicator-item:last-child {
-  border-bottom: none;
+.overview-indicator-item:not(:first-child) {
+  border-left: 1px solid var(--border);
+  padding-left: 20px;
 }
 
-.overview-indicator-name {
-  font-weight: 600;
-  min-width: 10em;
-  color: var(--text);
-  opacity: 0.85;
-}
-
-.overview-indicator-value {
-  font-weight: 700;
-  color: var(--text);
-}
-
-.overview-indicator-delta {
-  font-size: 13px;
-  color: var(--text);
-  opacity: 0.65;
+[data-theme='dark'] .overview-indicator-item:not(:first-child) {
+  border-left-color: #343840;
 }

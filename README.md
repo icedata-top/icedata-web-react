@@ -47,6 +47,16 @@ icedata-web-react/
 | 主题主色 | `--theme-primary` | `#438BED` | 链接、强调、导航高亮、搜索按钮默认色等 |
 | 高亮 / 悬停 | `--theme-accent` | `#76AFF2` | 按钮悬停、部分强调态 |
 
+### 涨跌色（同环比等）
+
+与 **A 股等常见行情色** 一致：**上升为红、下降为绿**；持平为中性灰。变量在 `src/styles/global.css` 的 `:root` 与 `[data-theme='dark']` 中定义，组件内用 `var(--trend-up)` 等引用。
+
+| 变量名 | 浅色（`:root`） | 深色（`[data-theme='dark']`） | 含义 |
+|--------|------------------|-------------------------------|------|
+| `--trend-up` | `#CF1322` | `#FF7875` | 上升（红） |
+| `--trend-down` | `#3F8600` | `#95DE64` | 下降（绿） |
+| `--trend-flat` | `#8C8C8C` | `#8C8C8C` | 持平 / 无变化 |
+
 ### 浅色主题（`:root`）
 
 | 变量 | 色值 | 典型用途 |
@@ -87,7 +97,7 @@ icedata-web-react/
 
 ### 使用约定
 
-- 新增样式时优先使用 `var(--theme-primary)`、`var(--text)`、`var(--bg-hover)` 等变量。
+- 新增样式时优先使用 `var(--theme-primary)`、`var(--text)`、`var(--bg-hover)` 等变量；**同环比涨跌**使用 `var(--trend-up)` / `var(--trend-down)` / `var(--trend-flat)`，勿在组件内写死红绿色值。
 - 新建「卡片式」块时优先复用 `--radius-card`、`--shadow-card`、`--shadow-card-hover`，避免写死圆角与阴影。
 
 ## 术语约定
