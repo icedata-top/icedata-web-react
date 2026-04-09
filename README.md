@@ -8,6 +8,49 @@
 
 启动后默认在 `http://localhost:5173/` 访问。
 
+## 环境与后端配置
+
+项目支持三个运行环境：`MOCK`、`DEV`、`PROD`。环境配置与 API base URL 定义在：
+
+- `src/config/runtimeEnv.js`
+  - `CURRENT_APP_ENV`：当前环境（优先读取 `VITE_APP_ENV`）
+  - `BASE_URL_BY_ENV`：`DEV` / `PROD` 的 base url
+
+### 三个环境的作用
+
+- `MOCK`
+  - 各 `xxx.api.js` 直接返回本地 MOCK 数据，不发起后端请求
+  - 仅需启动前端：`npm start`
+- `DEV`
+  - 前端会发起真实 HTTP 请求
+  - 需要同时启动后端服务（默认指向 `http://localhost:8080`）
+- `PROD`
+  - 前端会发起真实 HTTP 请求
+  - 默认指向生产域名 `https://www.icedata.top`
+
+### 如何修改开发环境 socket（后端地址）
+
+请编辑 `src/config/runtimeEnv.js` 中的 `BASE_URL_BY_ENV`：
+
+```js
+const BASE_URL_BY_ENV = Object.freeze({
+  DEV: 'http://localhost:8080',
+  PROD: 'https://www.icedata.top',
+});
+```
+
+将 `DEV` 对应值改为你的开发后端地址（例如内网 IP、端口等）。
+
+### 如何切换环境
+
+通过 Vite 环境变量 `VITE_APP_ENV` 设置（可在启动命令前临时设置，或写入 `.env.local`）：
+
+- `VITE_APP_ENV=MOCK`
+- `VITE_APP_ENV=DEV`
+- `VITE_APP_ENV=PROD`
+
+未设置时默认使用 `MOCK`。
+
 ## 目录树
 
 ```

@@ -2,6 +2,8 @@
  * 首页概览 MOCK（无后端时模拟 API 返回结构）
  * 字段与后端约定：前端展示「歌曲」对应 video，「创作者」对应 user（见 README 术语）
  */
+import { isMockEnv } from '../../config/runtimeEnv.js';
+import { getJson } from '../http/client.js';
 
 const MOCK_HOME_DATA = {
   videoCount: 554593,
@@ -45,10 +47,16 @@ export function mapHomeDataToStats(data) {
 }
 
 /**
- * 获取首页概览数据（MOCK：不发起网络请求）
+ * 获取首页概览数据
+ * - MOCK 环境：返回本地模拟数据
+ * - DEV/PROD：GET /home/get-overview
  * @returns {Promise<ApiResult<HomeOverviewData>>}
  */
 export function fetchHomeOverview() {
+  if (!isMockEnv()) {
+    return getJson('/home/get-overview');
+  }
+
   const payload = {
     code: HOME_API_CODE.OK,
     message: 'success',

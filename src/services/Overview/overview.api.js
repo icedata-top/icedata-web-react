@@ -1,7 +1,17 @@
 /**
- * 总览页指标 MOCK（无后端时不发起请求）
- * 请求体约定：startDate / endDate 为 YYYY-MM-DD
+ * 总览页 API
+ * 请求参数约定：startDate / endDate 为 YYYY-MM-DD
+ * - MOCK 环境：返回本地模拟数据
+ * - DEV/PROD：发起真实 HTTP 请求
+ *
+ * 当前 API 列表（草拟 URL，无域名）：
+ * - fetchOverviewIndicators            -> /overview/get-indicators            （指标卡片）
+ * - fetchOverviewTrend                 -> /overview/get-trend                 （折线图卡片）
+ * - fetchOverviewPartitionSubmissions  -> /overview/get-partition-submissions （饼图卡片）
+ * - fetchOverviewViewHistogram         -> /overview/get-view-histogram        （直方图卡片）
  */
+import { isMockEnv } from '../../config/runtimeEnv.js';
+import { getJson } from '../http/client.js';
 
 /** 与首页等服务对齐的业务成功码 */
 export const OVERVIEW_API_CODE = {
@@ -33,11 +43,6 @@ export const OVERVIEW_API_CODE = {
  * @property {string} startDate
  * @property {string} endDate
  * @property {OverviewIndicator[]} indicators
- * @property {OverviewTrendDay[]} [trend] 按天的趋势序列（MOCK）
- * @property {OverviewPartitionSubmission[]} [partitionSubmissions] 各分区投稿量（全部投稿）
- * @property {OverviewPartitionSubmission[]} [partitionSubmissionsNew] 各分区投稿量（新投稿 MOCK）
- * @property {OverviewViewHistogramRow[]} [viewHistogram] 播放量分桶（直方图·全部投稿）
- * @property {OverviewViewHistogramRow[]} [viewHistogramNew] 播放量分桶（直方图·新投稿 MOCK）
  */
 
 /**
@@ -50,6 +55,13 @@ export const OVERVIEW_API_CODE = {
  * @property {string} endDate
  * @property {OverviewPartitionSubmission[]} rows
  * @property {OverviewPartitionSubmission[]} [rowsNew]
+ */
+
+/**
+ * @typedef {Object} OverviewTrendPayload
+ * @property {string} startDate
+ * @property {string} endDate
+ * @property {OverviewTrendDay[]} rows
  */
 
 /**
@@ -200,6 +212,10 @@ function cloneMockViewHistogramNew() {
  * @returns {Promise<ApiResult<{ startDate: string, endDate: string, rows: OverviewViewHistogramRow[], rowsNew: OverviewViewHistogramRow[] }>>}
  */
 export function fetchOverviewViewHistogram(startDate, endDate) {
+  if (!isMockEnv()) {
+    return getJson('/overview/get-view-histogram', { startDate, endDate });
+  }
+
   return Promise.resolve({
     code: OVERVIEW_API_CODE.OK,
     message: 'success',
@@ -213,12 +229,38 @@ export function fetchOverviewViewHistogram(startDate, endDate) {
 }
 
 /**
+ * 获取趋势折线数据（MOCK）
+ * @param {string} startDate YYYY-MM-DD
+ * @param {string} endDate YYYY-MM-DD
+ * @returns {Promise<ApiResult<OverviewTrendPayload>>}
+ */
+export function fetchOverviewTrend(startDate, endDate) {
+  if (!isMockEnv()) {
+    return getJson('/overview/get-trend', { startDate, endDate });
+  }
+
+  return Promise.resolve({
+    code: OVERVIEW_API_CODE.OK,
+    message: 'success',
+    data: {
+      startDate,
+      endDate,
+      rows: buildMockTrendForRange(startDate, endDate),
+    },
+  });
+}
+
+/**
  * 获取各二级分区投稿数量（MOCK）
  * @param {string} startDate YYYY-MM-DD
  * @param {string} endDate YYYY-MM-DD
  * @returns {Promise<ApiResult<OverviewPartitionSubmissionsPayload>>}
  */
 export function fetchOverviewPartitionSubmissions(startDate, endDate) {
+  if (!isMockEnv()) {
+    return getJson('/overview/get-partition-submissions', { startDate, endDate });
+  }
+
   return Promise.resolve({
     code: OVERVIEW_API_CODE.OK,
     message: 'success',
@@ -232,33 +274,23 @@ export function fetchOverviewPartitionSubmissions(startDate, endDate) {
 }
 
 /**
- * 根据日期范围拉取总览指标（MOCK）
+ * 获取指标卡片数据（MOCK）
  * @param {string} startDate YYYY-MM-DD
  * @param {string} endDate YYYY-MM-DD
  * @returns {Promise<ApiResult<OverviewIndicatorsPayload>>}
  */
 export function fetchOverviewIndicators(startDate, endDate) {
-  const data = {
-    startDate,
-    endDate,
-    indicators: MOCK_INDICATORS_BASE.map((row) => ({ ...row })),
-    trend: buildMockTrendForRange(startDate, endDate),
-    partitionSubmissions: cloneMockPartitionSubmissions(),
-    partitionSubmissionsNew: cloneMockPartitionSubmissionsNew(),
-    viewHistogram: cloneMockViewHistogram(),
-    viewHistogramNew: cloneMockViewHistogramNew(),
-  };
+  if (!isMockEnv()) {
+    return getJson('/overview/get-indicators', { startDate, endDate });
+  }
 
   return Promise.resolve({
     code: OVERVIEW_API_CODE.OK,
     message: 'success',
-    data,
+    data: {
+      startDate,
+      endDate,
+      indicators: MOCK_INDICATORS_BASE.map((row) => ({ ...row })),
+    },
   });
-}
-
-/**
- * @deprecated 请使用 fetchOverviewIndicators，返回结构已统一为 ApiResult
- */
-export function getOverviewIndicators(startDate, endDate) {
-  return fetchOverviewIndicators(startDate, endDate);
 }

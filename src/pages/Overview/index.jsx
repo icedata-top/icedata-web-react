@@ -7,7 +7,13 @@ import OverviewTrendChart from './components/OverviewTrendChart.jsx';
 import OverviewPartitionPieChart from './components/OverviewPartitionPieChart.jsx';
 import OverviewViewHistogramChart from './components/OverviewViewHistogramChart.jsx';
 import IndicatorCell from './components/IndicatorCell.jsx';
-import { fetchOverviewIndicators, OVERVIEW_API_CODE } from '../../services/Overview/overview.api.js';
+import {
+  fetchOverviewIndicators,
+  fetchOverviewPartitionSubmissions,
+  fetchOverviewTrend,
+  fetchOverviewViewHistogram,
+  OVERVIEW_API_CODE,
+} from '../../services/Overview/overview.api.js';
 import './index.css';
 
 const { Text } = Typography;
@@ -44,13 +50,34 @@ export default function Overview() {
 
   const load = useCallback((startDate, endDate) => {
     setLoading(true);
-    fetchOverviewIndicators(startDate, endDate)
-      .then((res) => {
-        if (res.code === OVERVIEW_API_CODE.OK && res.data) {
-          setPayload(res.data);
-        } else {
+    Promise.all([
+      fetchOverviewIndicators(startDate, endDate),
+      fetchOverviewTrend(startDate, endDate),
+      fetchOverviewPartitionSubmissions(startDate, endDate),
+      fetchOverviewViewHistogram(startDate, endDate),
+    ])
+      .then(([indicatorsRes, trendRes, partitionRes, histogramRes]) => {
+        const ok =
+          indicatorsRes.code === OVERVIEW_API_CODE.OK &&
+          trendRes.code === OVERVIEW_API_CODE.OK &&
+          partitionRes.code === OVERVIEW_API_CODE.OK &&
+          histogramRes.code === OVERVIEW_API_CODE.OK;
+
+        if (!ok || !indicatorsRes.data || !trendRes.data || !partitionRes.data || !histogramRes.data) {
           setPayload(null);
+          return;
         }
+
+        setPayload({
+          startDate,
+          endDate,
+          indicators: indicatorsRes.data.indicators ?? [],
+          trend: trendRes.data.rows ?? [],
+          partitionSubmissions: partitionRes.data.rows ?? [],
+          partitionSubmissionsNew: partitionRes.data.rowsNew ?? [],
+          viewHistogram: histogramRes.data.rows ?? [],
+          viewHistogramNew: histogramRes.data.rowsNew ?? [],
+        });
       })
       .finally(() => setLoading(false));
   }, []);
