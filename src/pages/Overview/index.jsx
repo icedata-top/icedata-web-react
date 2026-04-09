@@ -53,17 +53,29 @@ export default function Overview() {
     Promise.all([
       fetchOverviewIndicators(startDate, endDate),
       fetchOverviewTrend(startDate, endDate),
-      fetchOverviewPartitionSubmissions(startDate, endDate),
-      fetchOverviewViewHistogram(startDate, endDate),
+      fetchOverviewPartitionSubmissions(startDate, endDate, 'all'),
+      fetchOverviewPartitionSubmissions(startDate, endDate, 'new'),
+      fetchOverviewViewHistogram(startDate, endDate, 'all'),
+      fetchOverviewViewHistogram(startDate, endDate, 'new'),
     ])
-      .then(([indicatorsRes, trendRes, partitionRes, histogramRes]) => {
+      .then(([indicatorsRes, trendRes, partitionAllRes, partitionNewRes, histogramAllRes, histogramNewRes]) => {
         const ok =
           indicatorsRes.code === OVERVIEW_API_CODE.OK &&
           trendRes.code === OVERVIEW_API_CODE.OK &&
-          partitionRes.code === OVERVIEW_API_CODE.OK &&
-          histogramRes.code === OVERVIEW_API_CODE.OK;
+          partitionAllRes.code === OVERVIEW_API_CODE.OK &&
+          partitionNewRes.code === OVERVIEW_API_CODE.OK &&
+          histogramAllRes.code === OVERVIEW_API_CODE.OK &&
+          histogramNewRes.code === OVERVIEW_API_CODE.OK;
 
-        if (!ok || !indicatorsRes.data || !trendRes.data || !partitionRes.data || !histogramRes.data) {
+        if (
+          !ok ||
+          !indicatorsRes.data ||
+          !trendRes.data ||
+          !partitionAllRes.data ||
+          !partitionNewRes.data ||
+          !histogramAllRes.data ||
+          !histogramNewRes.data
+        ) {
           setPayload(null);
           return;
         }
@@ -73,10 +85,10 @@ export default function Overview() {
           endDate,
           indicators: indicatorsRes.data.indicators ?? [],
           trend: trendRes.data.rows ?? [],
-          partitionSubmissions: partitionRes.data.rows ?? [],
-          partitionSubmissionsNew: partitionRes.data.rowsNew ?? [],
-          viewHistogram: histogramRes.data.rows ?? [],
-          viewHistogramNew: histogramRes.data.rowsNew ?? [],
+          partitionSubmissions: partitionAllRes.data.rows ?? [],
+          partitionSubmissionsNew: partitionNewRes.data.rows ?? [],
+          viewHistogram: histogramAllRes.data.rows ?? [],
+          viewHistogramNew: histogramNewRes.data.rows ?? [],
         });
       })
       .finally(() => setLoading(false));

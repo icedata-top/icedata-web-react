@@ -54,7 +54,6 @@ export const OVERVIEW_API_CODE = {
  * @property {string} startDate
  * @property {string} endDate
  * @property {OverviewPartitionSubmission[]} rows
- * @property {OverviewPartitionSubmission[]} [rowsNew]
  */
 
 /**
@@ -209,11 +208,14 @@ function cloneMockViewHistogramNew() {
  * 播放量直方图分桶（MOCK）
  * @param {string} startDate YYYY-MM-DD
  * @param {string} endDate YYYY-MM-DD
- * @returns {Promise<ApiResult<{ startDate: string, endDate: string, rows: OverviewViewHistogramRow[], rowsNew: OverviewViewHistogramRow[] }>>}
+ * @param {'all'|'new'} [scope='all'] 投稿范围（通过请求参数区分，不在同一响应里返回两套 rows）
+ * @returns {Promise<ApiResult<{ startDate: string, endDate: string, rows: OverviewViewHistogramRow[] }>>}
  */
-export function fetchOverviewViewHistogram(startDate, endDate) {
+export function fetchOverviewViewHistogram(startDate, endDate, scope = 'all') {
+  const isNewScope = scope === 'new';
+
   if (!isMockEnv()) {
-    return getJson('/overview/get-view-histogram', { startDate, endDate });
+    return getJson('/overview/get-view-histogram', { startDate, endDate, scope });
   }
 
   return Promise.resolve({
@@ -222,8 +224,7 @@ export function fetchOverviewViewHistogram(startDate, endDate) {
     data: {
       startDate,
       endDate,
-      rows: cloneMockViewHistogram(),
-      rowsNew: cloneMockViewHistogramNew(),
+      rows: isNewScope ? cloneMockViewHistogramNew() : cloneMockViewHistogram(),
     },
   });
 }
@@ -254,11 +255,14 @@ export function fetchOverviewTrend(startDate, endDate) {
  * 获取各二级分区投稿数量（MOCK）
  * @param {string} startDate YYYY-MM-DD
  * @param {string} endDate YYYY-MM-DD
+ * @param {'all'|'new'} [scope='all'] 投稿范围（通过请求参数区分，不在同一响应里返回两套 rows）
  * @returns {Promise<ApiResult<OverviewPartitionSubmissionsPayload>>}
  */
-export function fetchOverviewPartitionSubmissions(startDate, endDate) {
+export function fetchOverviewPartitionSubmissions(startDate, endDate, scope = 'all') {
+  const isNewScope = scope === 'new';
+
   if (!isMockEnv()) {
-    return getJson('/overview/get-partition-submissions', { startDate, endDate });
+    return getJson('/overview/get-partition-submissions', { startDate, endDate, scope });
   }
 
   return Promise.resolve({
@@ -267,8 +271,7 @@ export function fetchOverviewPartitionSubmissions(startDate, endDate) {
     data: {
       startDate,
       endDate,
-      rows: cloneMockPartitionSubmissions(),
-      rowsNew: cloneMockPartitionSubmissionsNew(),
+      rows: isNewScope ? cloneMockPartitionSubmissionsNew() : cloneMockPartitionSubmissions(),
     },
   });
 }
