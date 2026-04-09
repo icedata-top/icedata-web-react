@@ -1,28 +1,40 @@
+/*
+ * 整页固定视口高度，仅右侧 .overview-main-scroll 纵向滚动，避免出现「页面 + 主列」双滚动条；
+ * 左侧筛选不在滚动容器内。
+ */
 .overview-page {
-  padding: 24px 20px 32px;
+  --overview-page-top-offset: 88px;
+  height: calc(100vh - var(--overview-page-top-offset));
+  max-height: calc(100vh - var(--overview-page-top-offset));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px 20px;
   color: var(--text);
   box-sizing: border-box;
 }
 
-/* 左：筛选（桌面 sticky）；右：可滚动内容区 */
+/* 左：筛选；右：唯一纵向滚动区 */
 .overview-layout {
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 24px;
   max-width: 1200px;
   margin: 0 auto;
-  min-height: calc(100vh - 72px);
+  width: 100%;
+  overflow: hidden;
 }
 
 .overview-sidebar {
   flex: 0 0 auto;
   width: 100%;
   max-width: 320px;
-  position: sticky;
-  top: 16px;
   align-self: flex-start;
   z-index: 1;
+  overflow: visible;
 }
 
 .overview-panel--filter {
@@ -44,52 +56,101 @@
 .overview-main-scroll {
   flex: 1;
   min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-height: calc(100vh - 56px);
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 2px;
+  padding-right: 4px;
+  scrollbar-gutter: stable;
   -webkit-overflow-scrolling: touch;
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15, 23, 42, 0.28) transparent;
 }
 
-/* 仅 isMobile 时挂载：顶部筛选入口 */
+/* WebKit：浅色滚动条 */
+.overview-main-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.overview-main-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overview-main-scroll::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.22);
+  border-radius: 4px;
+}
+
+.overview-main-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 23, 42, 0.38);
+}
+
+/* 深色模式滚动条 */
+[data-theme='dark'] .overview-main-scroll {
+  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+}
+
+[data-theme='dark'] .overview-main-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+[data-theme='dark'] .overview-main-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* 仅 isMobile 时挂载：顶部筛选入口（背景与页面一致，避免双滚动条下错位） */
 .overview-mobile-filter-bar {
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  position: sticky;
-  top: 0;
-  z-index: 2;
+  width: 100%;
   padding: 4px 0 10px;
-  margin: -4px 0 0;
-  background: linear-gradient(to bottom, var(--bg) 72%, transparent);
+  margin: 0;
+  background: var(--bg);
 }
 
 @media (max-width: 767px) {
-  /*
-   * 列方向时交叉轴为水平方向；若沿用 align-items: flex-start，
-   * 子项宽度会按内容收缩，正文卡片会被压得很窄。移动端改为拉伸占满视口宽。
-   */
   .overview-layout {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
-    min-height: calc(100vh - 64px);
+    min-height: 0;
   }
 
   .overview-main-scroll {
     width: 100%;
     max-width: 100%;
-    max-height: none;
     flex: 1;
     min-height: 0;
   }
+}
 
-  .overview-mobile-filter-bar {
-    width: 100%;
-  }
+/* 移动端「筛选条件」按钮：与主题一致 */
+.overview-mobile-filter-btn.ant-btn-default {
+  background: var(--card-bg);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.overview-mobile-filter-btn.ant-btn-default:hover {
+  background: var(--bg-hover);
+  border-color: var(--theme-primary);
+  color: var(--theme-primary);
+}
+
+[data-theme='dark'] .overview-mobile-filter-btn.ant-btn-default {
+  background: var(--card-bg) !important;
+  border-color: #343840 !important;
+  color: var(--text) !important;
+}
+
+[data-theme='dark'] .overview-mobile-filter-btn.ant-btn-default:hover {
+  border-color: var(--theme-primary) !important;
+  color: var(--theme-primary) !important;
 }
 
 .overview-filter-drawer .ant-drawer-content-wrapper {

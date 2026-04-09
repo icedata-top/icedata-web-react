@@ -35,6 +35,12 @@ export const OVERVIEW_API_CODE = {
  * @property {OverviewIndicator[]} indicators
  * @property {OverviewTrendDay[]} [trend] 按天的趋势序列（MOCK）
  * @property {OverviewPartitionSubmission[]} [partitionSubmissions] 各分区投稿量
+ * @property {OverviewViewHistogramRow[]} [viewHistogram] 播放量分桶（直方图·全部投稿）
+ * @property {OverviewViewHistogramRow[]} [viewHistogramNew] 播放量分桶（直方图·新投稿 MOCK）
+ */
+
+/**
+ * @typedef {{ code: string, label: string, count: number }} OverviewViewHistogramRow
  */
 
 /**
@@ -133,6 +139,60 @@ function cloneMockPartitionSubmissions() {
 }
 
 /**
+ * 播放量分桶 MOCK（与 SQL 中 E02–E09 区间一致；label 为横轴展示用）
+ * @type {OverviewViewHistogramRow[]}
+ */
+const MOCK_VIEW_HISTOGRAM_BASE = [
+  { code: 'E02', label: '0-10', count: 60683 },
+  { code: 'E03', label: '10-100', count: 19334 },
+  { code: 'E04', label: '100-1000', count: 57788 },
+  { code: 'E05', label: '1000-1万', count: 65705 },
+  { code: 'E06', label: '1万-10万', count: 50877 },
+  { code: 'E07', label: '10万-100万', count: 18633 },
+  { code: 'E08', label: '100万-1000万', count: 2170 },
+  { code: 'E09', label: '1000万+', count: 42 },
+];
+
+function cloneMockViewHistogram() {
+  return MOCK_VIEW_HISTOGRAM_BASE.map((row) => ({ ...row }));
+}
+
+/** 新投稿维度的直方图 MOCK（与全部投稿同分桶，数量为独立 MOCK） */
+const MOCK_VIEW_HISTOGRAM_NEW_BASE = [
+  { code: 'E02', label: '0-10', count: 4820 },
+  { code: 'E03', label: '10-100', count: 2104 },
+  { code: 'E04', label: '100-1000', count: 8912 },
+  { code: 'E05', label: '1000-1万', count: 12408 },
+  { code: 'E06', label: '1万-10万', count: 9602 },
+  { code: 'E07', label: '10万-100万', count: 3104 },
+  { code: 'E08', label: '100万-1000万', count: 412 },
+  { code: 'E09', label: '1000万+', count: 6 },
+];
+
+function cloneMockViewHistogramNew() {
+  return MOCK_VIEW_HISTOGRAM_NEW_BASE.map((row) => ({ ...row }));
+}
+
+/**
+ * 播放量直方图分桶（MOCK）
+ * @param {string} startDate YYYY-MM-DD
+ * @param {string} endDate YYYY-MM-DD
+ * @returns {Promise<ApiResult<{ startDate: string, endDate: string, rows: OverviewViewHistogramRow[] }>>}
+ */
+export function fetchOverviewViewHistogram(startDate, endDate) {
+  return Promise.resolve({
+    code: OVERVIEW_API_CODE.OK,
+    message: 'success',
+    data: {
+      startDate,
+      endDate,
+      rows: cloneMockViewHistogram(),
+      rowsNew: cloneMockViewHistogramNew(),
+    },
+  });
+}
+
+/**
  * 获取各二级分区投稿数量（MOCK）
  * @param {string} startDate YYYY-MM-DD
  * @param {string} endDate YYYY-MM-DD
@@ -163,6 +223,8 @@ export function fetchOverviewIndicators(startDate, endDate) {
     indicators: MOCK_INDICATORS_BASE.map((row) => ({ ...row })),
     trend: buildMockTrendForRange(startDate, endDate),
     partitionSubmissions: cloneMockPartitionSubmissions(),
+    viewHistogram: cloneMockViewHistogram(),
+    viewHistogramNew: cloneMockViewHistogramNew(),
   };
 
   return Promise.resolve({

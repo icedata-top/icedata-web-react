@@ -5,6 +5,7 @@ import { Button, Card, Drawer, Spin, Typography } from 'antd';
 import OverviewFilter from './components/OverviewFilter.jsx';
 import OverviewTrendChart from './components/OverviewTrendChart.jsx';
 import OverviewPartitionPieChart from './components/OverviewPartitionPieChart.jsx';
+import OverviewViewHistogramChart from './components/OverviewViewHistogramChart.jsx';
 import IndicatorCell from './components/IndicatorCell.jsx';
 import { fetchOverviewIndicators, OVERVIEW_API_CODE } from '../../services/Overview/overview.api.js';
 import './index.css';
@@ -93,6 +94,7 @@ export default function Overview() {
             <div className="overview-mobile-filter-bar">
               <Button
                 type="default"
+                className="overview-mobile-filter-btn"
                 icon={<FilterOutlined />}
                 onClick={() => setFilterDrawerOpen(true)}
                 aria-expanded={filterDrawerOpen}
@@ -143,6 +145,12 @@ export default function Overview() {
           <OverviewTrendChart trend={payload?.trend ?? []} />
 
           <OverviewPartitionPieChart rows={payload?.partitionSubmissions ?? []} />
+
+          <OverviewViewHistogramChart
+            rows={payload?.viewHistogram ?? []}
+            rowsNew={payload?.viewHistogramNew ?? []}
+            asOfDate={range?.[1] ? range[1].format('YYYY-MM-DD') : undefined}
+          />
 
           <Card className="overview-panel overview-panel--mock" bordered={false} title="明细表（占位）">
             <div className="overview-mock-block" role="presentation">
