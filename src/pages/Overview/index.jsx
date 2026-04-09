@@ -42,7 +42,13 @@ function useIsMobile() {
 }
 
 export default function Overview() {
-  const [range, setRange] = useState(() => defaultRange());
+  const [filter, setFilter] = useState(() => {
+    const [start, end] = defaultRange();
+    return {
+      startTime: start.format('YYYY-MM-DD'),
+      endTime: end.format('YYYY-MM-DD'),
+    };
+  });
   const [loading, setLoading] = useState(false);
   const [payload, setPayload] = useState({
     indicators: [],
@@ -112,22 +118,22 @@ export default function Overview() {
   );
 
   useEffect(() => {
-    if (range?.[0] && range?.[1]) {
-      loadMain(range[0].format('YYYY-MM-DD'), range[1].format('YYYY-MM-DD'));
+    if (filter?.startTime && filter?.endTime) {
+      loadMain(filter.startTime, filter.endTime);
     } else {
       setPayload({ indicators: [], trend: [], partitionSubmissions: [], viewHistogram: [] });
     }
-  }, [range, loadMain]);
+  }, [filter, loadMain]);
 
   useEffect(() => {
-    if (!range?.[0] || !range?.[1]) return;
-    loadPartition(range[0].format('YYYY-MM-DD'), range[1].format('YYYY-MM-DD'), partitionScope);
-  }, [range, partitionScope, loadPartition]);
+    if (!filter?.startTime || !filter?.endTime) return;
+    loadPartition(filter.startTime, filter.endTime, partitionScope);
+  }, [filter, partitionScope, loadPartition]);
 
   useEffect(() => {
-    if (!range?.[0] || !range?.[1]) return;
-    loadHistogram(range[0].format('YYYY-MM-DD'), range[1].format('YYYY-MM-DD'), histogramScope);
-  }, [range, histogramScope, loadHistogram]);
+    if (!filter?.startTime || !filter?.endTime) return;
+    loadHistogram(filter.startTime, filter.endTime, histogramScope);
+  }, [filter, histogramScope, loadHistogram]);
 
   useEffect(() => {
     if (!isMobile) {
@@ -135,14 +141,20 @@ export default function Overview() {
     }
   }, [isMobile]);
 
-  const handleRangeChange = (dates) => {
-    setRange(dates);
+  const handleFilterChange = ({ startTime, endTime }) => {
+    setFilter({ startTime, endTime });
     if (isMobile) {
       setFilterDrawerOpen(false);
     }
   };
 
-  const filterBlock = <OverviewFilter value={range} onRangeChange={handleRangeChange} />;
+  const filterBlock = (
+    <OverviewFilter
+      startTime={filter?.startTime}
+      endTime={filter?.endTime}
+      onFilterChange={handleFilterChange}
+    />
+  );
 
   return (
     <div className="overview-page">
@@ -189,7 +201,7 @@ export default function Overview() {
           <Card className="overview-panel overview-panel--metrics" bordered={false} title="指标数值">
             <section className="overview-metrics" aria-live="polite">
               <Spin spinning={loading}>
-                {!range?.[0] || !range?.[1] ? (
+                {!filter?.startTime || !filter?.endTime ? (
                   <Text type="secondary">请选择日期范围以查看指标。</Text>
                 ) : payload?.indicators?.length ? (
                   <div className="overview-meta">
@@ -218,7 +230,7 @@ export default function Overview() {
 
           <OverviewViewHistogramChart
             rows={payload?.viewHistogram ?? []}
-            asOfDate={range?.[1] ? range[1].format('YYYY-MM-DD') : undefined}
+            asOfDate={filter?.endTime}
             scope={histogramScope}
             onScopeChange={setHistogramScope}
           />
