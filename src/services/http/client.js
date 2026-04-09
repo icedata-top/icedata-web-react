@@ -1,29 +1,69 @@
 import { getApiBaseUrl } from '../../config/runtimeEnv.js';
 
+const inFlightRequestMap = new Map();
+
+export class ApiError extends Error {
+  /**
+   * @param {number|string} code
+   * @param {string} message
+   */
+  constructor(code, message) {
+    super(message);
+    this.name = 'ApiError';
+    this.code = code;
+  }
+}
+
 /**
- * 发起 GET 请求并返回 JSON。
+ * 发起 POST 请求并返回“已解壳”的 data/result。
  * @param {string} path 形如 /overview/get-indicators
- * @param {Record<string, string | number | boolean | null | undefined>} [query]
+ * @param {unknown} [body]
  */
-export async function getJson(path, query) {
+export async function postJson(path, body) {
   const baseUrl = getApiBaseUrl();
   const url = new URL(path, `${baseUrl || window.location.origin}/`);
+  const requestBody = JSON.stringify(body ?? {});
+  const dedupeKey = `${url.toString()}::${requestBody}`;
 
-  if (query) {
-    for (const [key, value] of Object.entries(query)) {
-      if (value == null) continue;
-      url.searchParams.set(key, String(value));
-    }
+  if (inFlightRequestMap.has(dedupeKey)) {
+    return inFlightRequestMap.get(dedupeKey);
   }
 
-  const res = await fetch(url.toString(), {
-    method: 'GET',
-    headers: { Accept: 'application/json' },
-  });
+  const requestPromise = fetch(url.toString(), {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: requestBody,
+  })
+    .then(async (res) => {
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      const raw = await res.json();
+      return unwrapPayload(raw);
+    })
+    .finally(() => {
+      inFlightRequestMap.delete(dedupeKey);
+    });
 
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+  inFlightRequestMap.set(dedupeKey, requestPromise);
+  return requestPromise;
+}
+
+function unwrapPayload(raw) {
+  if (!raw || typeof raw !== 'object') return raw;
+
+  const code = raw.code;
+  const msg = raw.msg ?? raw.message ?? 'Request failed';
+
+  // 兼容两种成功码：0（旧约定）/ 200（后端当前约定）
+  if (code != null && code !== 0 && code !== 200) {
+    throw new ApiError(code, String(msg));
   }
 
-  return res.json();
+  if (Object.prototype.hasOwnProperty.call(raw, 'result')) return raw.result;
+  if (Object.prototype.hasOwnProperty.call(raw, 'data')) return raw.data;
+  return raw;
 }

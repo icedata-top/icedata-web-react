@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Card, Segmented, Typography } from 'antd';
 import VChart from '@visactor/vchart';
 import { useDocThemeDark } from '../../../hooks/useDocThemeDark.js';
@@ -42,17 +42,17 @@ function buildBarSpec(rows) {
 
 /**
  * @param {object} props
- * @param {ViewHistogramRow[]} props.rows 全部投稿分桶
- * @param {ViewHistogramRow[]} props.rowsNew 新投稿分桶
+ * @param {ViewHistogramRow[]} props.rows 当前 scope 分桶数据
  * @param {string} [props.asOfDate] YYYY-MM-DD，筛选结束日（数据截至日）
+ * @param {HistogramSubmissionScope} [props.scope]
+ * @param {(scope: HistogramSubmissionScope) => void} [props.onScopeChange]
  */
-export default function OverviewViewHistogramChart({ rows, rowsNew, asOfDate }) {
-  const [scope, setScope] = useState(/** @type {HistogramSubmissionScope} */ (SCOPE_ALL));
+export default function OverviewViewHistogramChart({ rows, asOfDate, scope = SCOPE_ALL, onScopeChange }) {
   const hostRef = useRef(null);
   const chartRef = useRef(null);
   const isDark = useDocThemeDark();
 
-  const activeRows = scope === SCOPE_NEW ? (rowsNew ?? []) : (rows ?? []);
+  const activeRows = rows ?? [];
 
   const spec = useMemo(() => buildBarSpec(activeRows), [activeRows]);
 
@@ -118,7 +118,7 @@ export default function OverviewViewHistogramChart({ rows, rowsNew, asOfDate }) 
           <Segmented
             className="overview-view-histogram-segmented"
             value={scope}
-            onChange={(v) => setScope(v)}
+            onChange={(v) => onScopeChange?.(/** @type {HistogramSubmissionScope} */ (v))}
             options={[
               { label: '全部投稿', value: SCOPE_ALL },
               { label: '新投稿', value: SCOPE_NEW },

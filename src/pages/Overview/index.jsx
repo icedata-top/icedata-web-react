@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { FilterOutlined } from '@ant-design/icons';
-import { Button, Card, Drawer, Spin, Typography } from 'antd';
+import { Button, Card, Drawer, Spin, Typography, message } from 'antd';
 import OverviewFilter from './components/OverviewFilter.jsx';
 import OverviewTrendChart from './components/OverviewTrendChart.jsx';
 import OverviewPartitionPieChart from './components/OverviewPartitionPieChart.jsx';
 import OverviewViewHistogramChart from './components/OverviewViewHistogramChart.jsx';
 import IndicatorCell from './components/IndicatorCell.jsx';
+import { ApiError } from '../../services/http/client.js';
 import {
   fetchOverviewIndicators,
   fetchOverviewPartitionSubmissions,
   fetchOverviewTrend,
   fetchOverviewViewHistogram,
-  OVERVIEW_API_CODE,
 } from '../../services/Overview/overview.api.js';
 import './index.css';
 
@@ -44,63 +44,90 @@ function useIsMobile() {
 export default function Overview() {
   const [range, setRange] = useState(() => defaultRange());
   const [loading, setLoading] = useState(false);
-  const [payload, setPayload] = useState(null);
+  const [payload, setPayload] = useState({
+    indicators: [],
+    trend: [],
+    partitionSubmissions: [],
+    viewHistogram: [],
+  });
+  const [partitionScope, setPartitionScope] = useState('all');
+  const [histogramScope, setHistogramScope] = useState('all');
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const isMobile = useIsMobile();
 
-  const load = useCallback((startDate, endDate) => {
+  const showApiError = useCallback((err) => {
+    if (err instanceof ApiError) {
+      message.error(`[${err.code}] ${err.message}`);
+      return;
+    }
+    message.error(err?.message || '请求失败');
+  }, []);
+
+  const loadMain = useCallback((startDate, endDate) => {
     setLoading(true);
     Promise.all([
       fetchOverviewIndicators(startDate, endDate),
       fetchOverviewTrend(startDate, endDate),
-      fetchOverviewPartitionSubmissions(startDate, endDate, 'all'),
-      fetchOverviewPartitionSubmissions(startDate, endDate, 'new'),
-      fetchOverviewViewHistogram(startDate, endDate, 'all'),
-      fetchOverviewViewHistogram(startDate, endDate, 'new'),
     ])
-      .then(([indicatorsRes, trendRes, partitionAllRes, partitionNewRes, histogramAllRes, histogramNewRes]) => {
-        const ok =
-          indicatorsRes.code === OVERVIEW_API_CODE.OK &&
-          trendRes.code === OVERVIEW_API_CODE.OK &&
-          partitionAllRes.code === OVERVIEW_API_CODE.OK &&
-          partitionNewRes.code === OVERVIEW_API_CODE.OK &&
-          histogramAllRes.code === OVERVIEW_API_CODE.OK &&
-          histogramNewRes.code === OVERVIEW_API_CODE.OK;
-
-        if (
-          !ok ||
-          !indicatorsRes.data ||
-          !trendRes.data ||
-          !partitionAllRes.data ||
-          !partitionNewRes.data ||
-          !histogramAllRes.data ||
-          !histogramNewRes.data
-        ) {
-          setPayload(null);
-          return;
-        }
-
-        setPayload({
-          startDate,
-          endDate,
-          indicators: indicatorsRes.data.indicators ?? [],
-          trend: trendRes.data.rows ?? [],
-          partitionSubmissions: partitionAllRes.data.rows ?? [],
-          partitionSubmissionsNew: partitionNewRes.data.rows ?? [],
-          viewHistogram: histogramAllRes.data.rows ?? [],
-          viewHistogramNew: histogramNewRes.data.rows ?? [],
-        });
+      .then(([indicatorsData, trendData]) => {
+        setPayload((prev) => ({
+          ...prev,
+          indicators: indicatorsData?.indicators ?? [],
+          trend: trendData?.rows ?? [],
+        }));
+      })
+      .catch((err) => {
+        setPayload((prev) => ({ ...prev, indicators: [], trend: [] }));
+        showApiError(err);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [showApiError]);
+
+  const loadPartition = useCallback(
+    (startDate, endDate, scope) => {
+      fetchOverviewPartitionSubmissions(startDate, endDate, scope)
+        .then((data) => {
+          setPayload((prev) => ({ ...prev, partitionSubmissions: data?.rows ?? [] }));
+        })
+        .catch((err) => {
+          setPayload((prev) => ({ ...prev, partitionSubmissions: [] }));
+          showApiError(err);
+        });
+    },
+    [showApiError],
+  );
+
+  const loadHistogram = useCallback(
+    (startDate, endDate, scope) => {
+      fetchOverviewViewHistogram(startDate, endDate, scope)
+        .then((data) => {
+          setPayload((prev) => ({ ...prev, viewHistogram: data?.rows ?? [] }));
+        })
+        .catch((err) => {
+          setPayload((prev) => ({ ...prev, viewHistogram: [] }));
+          showApiError(err);
+        });
+    },
+    [showApiError],
+  );
 
   useEffect(() => {
     if (range?.[0] && range?.[1]) {
-      load(range[0].format('YYYY-MM-DD'), range[1].format('YYYY-MM-DD'));
+      loadMain(range[0].format('YYYY-MM-DD'), range[1].format('YYYY-MM-DD'));
     } else {
-      setPayload(null);
+      setPayload({ indicators: [], trend: [], partitionSubmissions: [], viewHistogram: [] });
     }
-  }, [range, load]);
+  }, [range, loadMain]);
+
+  useEffect(() => {
+    if (!range?.[0] || !range?.[1]) return;
+    loadPartition(range[0].format('YYYY-MM-DD'), range[1].format('YYYY-MM-DD'), partitionScope);
+  }, [range, partitionScope, loadPartition]);
+
+  useEffect(() => {
+    if (!range?.[0] || !range?.[1]) return;
+    loadHistogram(range[0].format('YYYY-MM-DD'), range[1].format('YYYY-MM-DD'), histogramScope);
+  }, [range, histogramScope, loadHistogram]);
 
   useEffect(() => {
     if (!isMobile) {
@@ -164,7 +191,7 @@ export default function Overview() {
               <Spin spinning={loading}>
                 {!range?.[0] || !range?.[1] ? (
                   <Text type="secondary">请选择日期范围以查看指标。</Text>
-                ) : payload ? (
+                ) : payload?.indicators?.length ? (
                   <div className="overview-meta">
                     <div className="overview-indicator-grid">
                       {payload.indicators.map((row) => (
@@ -185,13 +212,15 @@ export default function Overview() {
 
           <OverviewPartitionPieChart
             rows={payload?.partitionSubmissions ?? []}
-            rowsNew={payload?.partitionSubmissionsNew ?? []}
+            scope={partitionScope}
+            onScopeChange={setPartitionScope}
           />
 
           <OverviewViewHistogramChart
             rows={payload?.viewHistogram ?? []}
-            rowsNew={payload?.viewHistogramNew ?? []}
             asOfDate={range?.[1] ? range[1].format('YYYY-MM-DD') : undefined}
+            scope={histogramScope}
+            onScopeChange={setHistogramScope}
           />
 
           {/* <Card className="overview-panel overview-panel--mock" bordered={false} title="明细表（占位）">

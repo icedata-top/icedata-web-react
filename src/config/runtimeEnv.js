@@ -15,7 +15,7 @@ export const APP_ENV = Object.freeze({
 });
 
 /** 默认环境（未配置 VITE_APP_ENV 时生效） */
-const DEFAULT_ENV = APP_ENV.MOCK;
+const DEFAULT_ENV = APP_ENV.DEV;
 
 /** 当前环境：优先取 VITE_APP_ENV，否则使用默认值 */
 export const CURRENT_APP_ENV = normalizeAppEnv(import.meta.env?.VITE_APP_ENV) ?? DEFAULT_ENV;

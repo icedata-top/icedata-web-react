@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Card, Segmented, Typography } from 'antd';
 import VChart from '@visactor/vchart';
 import { getBilibiliSubPartitionName } from '../../../constants/bilibili/type.id.js';
@@ -45,16 +45,16 @@ function buildPieSpec(rows) {
 
 /**
  * @param {object} props
- * @param {PartitionSubmissionRow[]} props.rows 全部投稿分区数据
- * @param {PartitionSubmissionRow[]} [props.rowsNew] 新投稿分区数据
+ * @param {PartitionSubmissionRow[]} props.rows 当前 scope 分区数据
+ * @param {PartitionSubmissionScope} [props.scope]
+ * @param {(scope: PartitionSubmissionScope) => void} [props.onScopeChange]
  */
-export default function OverviewPartitionPieChart({ rows, rowsNew }) {
-  const [scope, setScope] = useState(/** @type {PartitionSubmissionScope} */ (SCOPE_ALL));
+export default function OverviewPartitionPieChart({ rows, scope = SCOPE_ALL, onScopeChange }) {
   const hostRef = useRef(null);
   const chartRef = useRef(null);
   const isDark = useDocThemeDark();
 
-  const activeRows = scope === SCOPE_NEW ? (rowsNew ?? []) : (rows ?? []);
+  const activeRows = rows ?? [];
   const spec = useMemo(() => buildPieSpec(activeRows), [activeRows]);
 
   useEffect(() => {
@@ -113,7 +113,7 @@ export default function OverviewPartitionPieChart({ rows, rowsNew }) {
           <Segmented
             className="overview-partition-pie-segmented"
             value={scope}
-            onChange={(v) => setScope(v)}
+            onChange={(v) => onScopeChange?.(/** @type {PartitionSubmissionScope} */ (v))}
             options={[
               { label: '全部投稿', value: SCOPE_ALL },
               { label: '新投稿', value: SCOPE_NEW },

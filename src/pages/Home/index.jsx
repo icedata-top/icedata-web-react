@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Input, Spin, Statistic } from 'antd';
-import { fetchHomeOverview, HOME_API_CODE, mapHomeDataToStats } from '../../services/Home/home.api.js';
+import { Input, Spin, Statistic, message } from 'antd';
+import { ApiError } from '../../services/http/client.js';
+import { fetchHomeOverview, mapHomeDataToStats } from '../../services/Home/home.api.js';
 import './index.css';
 
 const { Search } = Input;
@@ -15,13 +16,18 @@ export default function Home() {
 
     setLoading(true);
     fetchHomeOverview()
-      .then((res) => {
+      .then((data) => {
         if (cancelled) return;
-        if (res.code === HOME_API_CODE.OK && res.data) {
-          setStats(mapHomeDataToStats(res.data));
-        } else {
-          setStats([]);
+        setStats(data ? mapHomeDataToStats(data) : []);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setStats([]);
+        if (err instanceof ApiError) {
+          message.error(`[${err.code}] ${err.message}`);
+          return;
         }
+        message.error(err?.message || '请求失败');
       })
       .finally(() => {
         if (!cancelled) setLoading(false);

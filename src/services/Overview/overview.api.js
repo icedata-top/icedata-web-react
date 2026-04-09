@@ -11,7 +11,7 @@
  * - fetchOverviewViewHistogram         -> /overview/get-view-histogram        （直方图卡片）
  */
 import { isMockEnv } from '../../config/runtimeEnv.js';
-import { getJson } from '../http/client.js';
+import { postJson } from '../http/client.js';
 
 /** 与首页等服务对齐的业务成功码 */
 export const OVERVIEW_API_CODE = {
@@ -205,6 +205,21 @@ function cloneMockViewHistogramNew() {
 }
 
 /**
+ * 构造与后端约定一致的请求体：
+ * public class OverviewRequest { String startTime; String endTime; Map<String, String> addtionalParams; }
+ * @param {string} startDate
+ * @param {string} endDate
+ * @param {Record<string, string>} [addtionalParams]
+ */
+function buildOverviewRequest(startDate, endDate, addtionalParams) {
+  return {
+    startTime: startDate,
+    endTime: endDate,
+    addtionalParams: addtionalParams ?? {},
+  };
+}
+
+/**
  * 播放量直方图分桶（MOCK）
  * @param {string} startDate YYYY-MM-DD
  * @param {string} endDate YYYY-MM-DD
@@ -215,17 +230,13 @@ export function fetchOverviewViewHistogram(startDate, endDate, scope = 'all') {
   const isNewScope = scope === 'new';
 
   if (!isMockEnv()) {
-    return getJson('/overview/get-view-histogram', { startDate, endDate, scope });
+    return postJson('/overview/get-view-histogram', buildOverviewRequest(startDate, endDate, { scope }));
   }
 
   return Promise.resolve({
-    code: OVERVIEW_API_CODE.OK,
-    message: 'success',
-    data: {
-      startDate,
-      endDate,
-      rows: isNewScope ? cloneMockViewHistogramNew() : cloneMockViewHistogram(),
-    },
+    startDate,
+    endDate,
+    rows: isNewScope ? cloneMockViewHistogramNew() : cloneMockViewHistogram(),
   });
 }
 
@@ -237,17 +248,13 @@ export function fetchOverviewViewHistogram(startDate, endDate, scope = 'all') {
  */
 export function fetchOverviewTrend(startDate, endDate) {
   if (!isMockEnv()) {
-    return getJson('/overview/get-trend', { startDate, endDate });
+    return postJson('/overview/get-trend', buildOverviewRequest(startDate, endDate));
   }
 
   return Promise.resolve({
-    code: OVERVIEW_API_CODE.OK,
-    message: 'success',
-    data: {
-      startDate,
-      endDate,
-      rows: buildMockTrendForRange(startDate, endDate),
-    },
+    startDate,
+    endDate,
+    rows: buildMockTrendForRange(startDate, endDate),
   });
 }
 
@@ -262,17 +269,13 @@ export function fetchOverviewPartitionSubmissions(startDate, endDate, scope = 'a
   const isNewScope = scope === 'new';
 
   if (!isMockEnv()) {
-    return getJson('/overview/get-partition-submissions', { startDate, endDate, scope });
+    return postJson('/overview/get-partition-submissions', buildOverviewRequest(startDate, endDate, { scope }));
   }
 
   return Promise.resolve({
-    code: OVERVIEW_API_CODE.OK,
-    message: 'success',
-    data: {
-      startDate,
-      endDate,
-      rows: isNewScope ? cloneMockPartitionSubmissionsNew() : cloneMockPartitionSubmissions(),
-    },
+    startDate,
+    endDate,
+    rows: isNewScope ? cloneMockPartitionSubmissionsNew() : cloneMockPartitionSubmissions(),
   });
 }
 
@@ -284,16 +287,12 @@ export function fetchOverviewPartitionSubmissions(startDate, endDate, scope = 'a
  */
 export function fetchOverviewIndicators(startDate, endDate) {
   if (!isMockEnv()) {
-    return getJson('/overview/get-indicators', { startDate, endDate });
+    return postJson('/overview/get-indicators', buildOverviewRequest(startDate, endDate));
   }
 
   return Promise.resolve({
-    code: OVERVIEW_API_CODE.OK,
-    message: 'success',
-    data: {
-      startDate,
-      endDate,
-      indicators: MOCK_INDICATORS_BASE.map((row) => ({ ...row })),
-    },
+    startDate,
+    endDate,
+    indicators: MOCK_INDICATORS_BASE.map((row) => ({ ...row })),
   });
 }
