@@ -8,15 +8,7 @@ import './IcedataNavbar.css';
 const menuItems = [
   { key: 'home', label: '首页' },
   { key: 'overview', label: '总览' },
-  {
-    key: 'songs',
-    label: '歌曲',
-    children: [
-      { key: 'song_search', label: '歌曲搜索' },
-      { key: 'single_detail', label: '单曲详情' },
-      { key: 'new_ranking', label: '新曲排行' },
-    ],
-  },
+  { key: 'songs', label: '歌曲' },
   { key: 'vocaloid', label: '虚拟歌手' },
   { key: 'creators', label: '创作者' },
   {

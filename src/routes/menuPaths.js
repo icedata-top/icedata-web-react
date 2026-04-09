@@ -2,6 +2,7 @@
 export const MENU_KEY_TO_PATH = {
   home: '/',
   overview: '/overview',
+  songs: '/songs',
   song_search: '/songs/search',
   single_detail: '/songs/detail',
   new_ranking: '/songs/ranking',

@@ -34,7 +34,8 @@ export const OVERVIEW_API_CODE = {
  * @property {string} endDate
  * @property {OverviewIndicator[]} indicators
  * @property {OverviewTrendDay[]} [trend] 按天的趋势序列（MOCK）
- * @property {OverviewPartitionSubmission[]} [partitionSubmissions] 各分区投稿量
+ * @property {OverviewPartitionSubmission[]} [partitionSubmissions] 各分区投稿量（全部投稿）
+ * @property {OverviewPartitionSubmission[]} [partitionSubmissionsNew] 各分区投稿量（新投稿 MOCK）
  * @property {OverviewViewHistogramRow[]} [viewHistogram] 播放量分桶（直方图·全部投稿）
  * @property {OverviewViewHistogramRow[]} [viewHistogramNew] 播放量分桶（直方图·新投稿 MOCK）
  */
@@ -48,6 +49,7 @@ export const OVERVIEW_API_CODE = {
  * @property {string} startDate
  * @property {string} endDate
  * @property {OverviewPartitionSubmission[]} rows
+ * @property {OverviewPartitionSubmission[]} [rowsNew]
  */
 
 /**
@@ -138,6 +140,24 @@ function cloneMockPartitionSubmissions() {
   return MOCK_PARTITION_SUBMISSIONS.map((row) => ({ ...row }));
 }
 
+/** 新投稿维度的分区投稿量 MOCK（用于饼图 Segmented） */
+const MOCK_PARTITION_SUBMISSIONS_NEW = [
+  { typeId: 30, count: 153 },
+  { typeId: 21, count: 121 },
+  { typeId: 31, count: 27 },
+  { typeId: 28, count: 22 },
+  { typeId: 47, count: 19 },
+  { typeId: 27, count: 18 },
+  { typeId: 130, count: 15 },
+  { typeId: 25, count: 14 },
+  { typeId: 59, count: 12 },
+  { typeId: 242, count: 9 },
+];
+
+function cloneMockPartitionSubmissionsNew() {
+  return MOCK_PARTITION_SUBMISSIONS_NEW.map((row) => ({ ...row }));
+}
+
 /**
  * 播放量分桶 MOCK（与 SQL 中 E02–E09 区间一致；label 为横轴展示用）
  * @type {OverviewViewHistogramRow[]}
@@ -177,7 +197,7 @@ function cloneMockViewHistogramNew() {
  * 播放量直方图分桶（MOCK）
  * @param {string} startDate YYYY-MM-DD
  * @param {string} endDate YYYY-MM-DD
- * @returns {Promise<ApiResult<{ startDate: string, endDate: string, rows: OverviewViewHistogramRow[] }>>}
+ * @returns {Promise<ApiResult<{ startDate: string, endDate: string, rows: OverviewViewHistogramRow[], rowsNew: OverviewViewHistogramRow[] }>>}
  */
 export function fetchOverviewViewHistogram(startDate, endDate) {
   return Promise.resolve({
@@ -206,6 +226,7 @@ export function fetchOverviewPartitionSubmissions(startDate, endDate) {
       startDate,
       endDate,
       rows: cloneMockPartitionSubmissions(),
+      rowsNew: cloneMockPartitionSubmissionsNew(),
     },
   });
 }
@@ -223,6 +244,7 @@ export function fetchOverviewIndicators(startDate, endDate) {
     indicators: MOCK_INDICATORS_BASE.map((row) => ({ ...row })),
     trend: buildMockTrendForRange(startDate, endDate),
     partitionSubmissions: cloneMockPartitionSubmissions(),
+    partitionSubmissionsNew: cloneMockPartitionSubmissionsNew(),
     viewHistogram: cloneMockViewHistogram(),
     viewHistogramNew: cloneMockViewHistogramNew(),
   };

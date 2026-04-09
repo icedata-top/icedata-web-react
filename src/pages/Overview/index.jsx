@@ -144,7 +144,10 @@ export default function Overview() {
 
           <OverviewTrendChart trend={payload?.trend ?? []} />
 
-          <OverviewPartitionPieChart rows={payload?.partitionSubmissions ?? []} />
+          <OverviewPartitionPieChart
+            rows={payload?.partitionSubmissions ?? []}
+            rowsNew={payload?.partitionSubmissionsNew ?? []}
+          />
 
           <OverviewViewHistogramChart
             rows={payload?.viewHistogram ?? []}
@@ -152,11 +155,11 @@ export default function Overview() {
             asOfDate={range?.[1] ? range[1].format('YYYY-MM-DD') : undefined}
           />
 
-          <Card className="overview-panel overview-panel--mock" bordered={false} title="明细表（占位）">
+          {/* <Card className="overview-panel overview-panel--mock" bordered={false} title="明细表（占位）">
             <div className="overview-mock-block" role="presentation">
               <Text type="secondary">此处为明细表格占位（MOCK）。</Text>
             </div>
-          </Card>
+          </Card> */}
         </div>
       </div>
     </div>

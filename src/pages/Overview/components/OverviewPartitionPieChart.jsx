@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef } from 'react';
-import { Card, Typography } from 'antd';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Card, Segmented, Typography } from 'antd';
 import VChart from '@visactor/vchart';
 import { getBilibiliSubPartitionName } from '../../../constants/bilibili/type.id.js';
 import { useDocThemeDark } from '../../../hooks/useDocThemeDark.js';
@@ -7,9 +7,11 @@ import './OverviewPartitionPieChart.css';
 
 const { Text } = Typography;
 
-/**
- * @typedef {{ typeId: number, count: number }} PartitionSubmissionRow
- */
+/** @typedef {'all' | 'new'} PartitionSubmissionScope */
+/** @typedef {{ typeId: number, count: number }} PartitionSubmissionRow */
+
+const SCOPE_ALL = 'all';
+const SCOPE_NEW = 'new';
 
 /**
  * @param {PartitionSubmissionRow[]} rows
@@ -43,14 +45,17 @@ function buildPieSpec(rows) {
 
 /**
  * @param {object} props
- * @param {PartitionSubmissionRow[]} props.rows
+ * @param {PartitionSubmissionRow[]} props.rows 全部投稿分区数据
+ * @param {PartitionSubmissionRow[]} [props.rowsNew] 新投稿分区数据
  */
-export default function OverviewPartitionPieChart({ rows }) {
+export default function OverviewPartitionPieChart({ rows, rowsNew }) {
+  const [scope, setScope] = useState(/** @type {PartitionSubmissionScope} */ (SCOPE_ALL));
   const hostRef = useRef(null);
   const chartRef = useRef(null);
   const isDark = useDocThemeDark();
 
-  const spec = useMemo(() => buildPieSpec(rows), [rows]);
+  const activeRows = scope === SCOPE_NEW ? (rowsNew ?? []) : (rows ?? []);
+  const spec = useMemo(() => buildPieSpec(activeRows), [activeRows]);
 
   useEffect(() => {
     const el = hostRef.current;
@@ -98,11 +103,23 @@ export default function OverviewPartitionPieChart({ rows }) {
     };
   }, [spec, isDark]);
 
-  const empty = !rows?.length;
+  const empty = !activeRows?.length;
 
   return (
     <Card className="overview-panel overview-panel--partition" bordered={false} title="分区投稿分布">
       <div className="overview-partition-pie-inner">
+        <div className="overview-partition-pie-toolbar">
+          <span className="overview-partition-pie-toolbar-hint" aria-hidden />
+          <Segmented
+            className="overview-partition-pie-segmented"
+            value={scope}
+            onChange={(v) => setScope(v)}
+            options={[
+              { label: '全部投稿', value: SCOPE_ALL },
+              { label: '新投稿', value: SCOPE_NEW },
+            ]}
+          />
+        </div>
         {empty ? (
           <div className="overview-partition-pie-empty">
             <Text type="secondary">暂无分区数据，请先选择日期范围。</Text>
