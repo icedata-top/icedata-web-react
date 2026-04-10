@@ -219,6 +219,27 @@
   gap: 10px;
 }
 
+.overview-filter-date-heading {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+}
+
+.overview-filter-date-heading .overview-filter-hint-trigger {
+  font-size: 13px;
+}
+
+.overview-filter-date-label {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--text);
+  opacity: 0.88;
+  white-space: nowrap;
+}
+
 .overview-filter .ant-picker {
   max-width: 100%;
 }
@@ -227,6 +248,44 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+}
+
+/* 筛选：时间说明（Tooltip，挂载在 body，需保留独立类名） */
+.overview-filter-hint-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  opacity: 0.55;
+  cursor: help;
+  font-size: 15px;
+  line-height: 1;
+  transition: opacity 0.15s ease;
+}
+
+.overview-filter-hint-trigger:hover,
+.overview-filter-hint-trigger:focus-visible {
+  opacity: 0.9;
+  outline: none;
+}
+
+.overview-filter-time-hint-tooltip .ant-tooltip-inner {
+  max-width: min(380px, calc(100vw - 32px));
+  text-align: left;
+}
+
+.overview-filter-tooltip-body {
+  margin: 0;
+}
+
+.overview-filter-tooltip-para {
+  margin: 0 0 8px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.overview-filter-tooltip-para:last-child {
+  margin-bottom: 0;
 }
 
 /* 日期范围：与页面主题一致 */

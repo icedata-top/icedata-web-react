@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import dayjs from 'dayjs';
 import { FilterOutlined } from '@ant-design/icons';
 import { Button, Card, Drawer, Spin, Typography, message } from 'antd';
-import OverviewFilter from './components/OverviewFilter.jsx';
+import OverviewFilter, { getDefaultOverviewFilter } from './components/OverviewFilter.jsx';
 import OverviewTrendChart from './components/OverviewTrendChart.jsx';
 import OverviewPartitionPieChart from './components/OverviewPartitionPieChart.jsx';
 import OverviewViewHistogramChart from './components/OverviewViewHistogramChart.jsx';
@@ -21,10 +20,6 @@ const { Text } = Typography;
 /** 与 CSS 中 @media 一致：小于此宽度视为移动端，筛选走抽屉 */
 const MOBILE_MAX_PX = 767;
 
-function defaultRange() {
-  return [dayjs().subtract(6, 'day').startOf('day'), dayjs().endOf('day')];
-}
-
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth <= MOBILE_MAX_PX : false,
@@ -42,13 +37,7 @@ function useIsMobile() {
 }
 
 export default function Overview() {
-  const [filter, setFilter] = useState(() => {
-    const [start, end] = defaultRange();
-    return {
-      startTime: start.format('YYYY-MM-DD'),
-      endTime: end.format('YYYY-MM-DD'),
-    };
-  });
+  const [filter, setFilter] = useState(() => getDefaultOverviewFilter());
   const [loading, setLoading] = useState(false);
   const [payload, setPayload] = useState({
     indicators: [],
