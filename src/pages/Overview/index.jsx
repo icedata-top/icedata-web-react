@@ -107,21 +107,21 @@ export default function Overview() {
   );
 
   useEffect(() => {
-    if (filter?.startTime && filter?.endTime) {
-      loadMain(filter.startTime, filter.endTime);
+    if (filter?.startDate && filter?.endDate) {
+      loadMain(filter.startDate, filter.endDate);
     } else {
       setPayload({ indicators: [], trend: [], partitionSubmissions: [], viewHistogram: [] });
     }
   }, [filter, loadMain]);
 
   useEffect(() => {
-    if (!filter?.startTime || !filter?.endTime) return;
-    loadPartition(filter.startTime, filter.endTime, partitionScope);
+    if (!filter?.startDate || !filter?.endDate) return;
+    loadPartition(filter.startDate, filter.endDate, partitionScope);
   }, [filter, partitionScope, loadPartition]);
 
   useEffect(() => {
-    if (!filter?.startTime || !filter?.endTime) return;
-    loadHistogram(filter.startTime, filter.endTime, histogramScope);
+    if (!filter?.startDate || !filter?.endDate) return;
+    loadHistogram(filter.startDate, filter.endDate, histogramScope);
   }, [filter, histogramScope, loadHistogram]);
 
   useEffect(() => {
@@ -130,8 +130,8 @@ export default function Overview() {
     }
   }, [isMobile]);
 
-  const handleFilterChange = ({ startTime, endTime }) => {
-    setFilter({ startTime, endTime });
+  const handleFilterChange = ({ startDate, endDate }) => {
+    setFilter({ startDate, endDate });
     if (isMobile) {
       setFilterDrawerOpen(false);
     }
@@ -139,8 +139,8 @@ export default function Overview() {
 
   const filterBlock = (
     <OverviewFilter
-      startTime={filter?.startTime}
-      endTime={filter?.endTime}
+      startDate={filter?.startDate}
+      endDate={filter?.endDate}
       onFilterChange={handleFilterChange}
     />
   );
@@ -190,7 +190,7 @@ export default function Overview() {
           <Card className="overview-panel overview-panel--metrics" bordered={false} title="指标数值">
             <section className="overview-metrics" aria-live="polite">
               <Spin spinning={loading}>
-                {!filter?.startTime || !filter?.endTime ? (
+                {!filter?.startDate || !filter?.endDate ? (
                   <Text type="secondary">请选择日期范围以查看指标。</Text>
                 ) : payload?.indicators?.length ? (
                   <div className="overview-meta">
@@ -219,7 +219,7 @@ export default function Overview() {
 
           <OverviewViewHistogramChart
             rows={payload?.viewHistogram ?? []}
-            asOfDate={filter?.endTime}
+            asOfDate={filter?.endDate}
             scope={histogramScope}
             onScopeChange={setHistogramScope}
           />

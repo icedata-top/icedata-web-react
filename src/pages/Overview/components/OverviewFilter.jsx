@@ -10,12 +10,12 @@ const { RangePicker } = DatePicker;
 
 /**
  * 指标时间窗说明：所选结束日期的次日 0 时 / 4 时为区间右端（T+1）。
- * @param {string} startTime YYYY-MM-DD
- * @param {string} endTime YYYY-MM-DD
+ * @param {string} startDate YYYY-MM-DD
+ * @param {string} endDate YYYY-MM-DD
  */
-function buildFilterTimeHints(startTime, endTime) {
-  const start = dayjs(startTime).startOf('day');
-  const endNext = dayjs(endTime).add(1, 'day').startOf('day');
+function buildFilterTimeHints(startDate, endDate) {
+  const start = dayjs(startDate).startOf('day');
+  const endNext = dayjs(endDate).add(1, 'day').startOf('day');
   const a0 = `${start.format('YYYY年M月D日')}0时`;
   const b0 = `${endNext.format('YYYY年M月D日')}0时`;
   const a4 = `${start.format('YYYY年M月D日')}4时`;
@@ -36,7 +36,7 @@ export function getOverviewMaxSelectableDate() {
 
 /**
  * 页面初始筛选：最近 7 个自然日（以昨天为结束日，不含今天），并受 MIN 日期夹取。
- * @returns {{ startTime: string, endTime: string }}
+ * @returns {{ startDate: string, endDate: string }}
  */
 export function getDefaultOverviewFilter() {
   const end = getOverviewMaxSelectableDate();
@@ -45,8 +45,8 @@ export function getDefaultOverviewFilter() {
     start = MIN_OVERVIEW_DATE;
   }
   return {
-    startTime: start.format('YYYY-MM-DD'),
-    endTime: end.format('YYYY-MM-DD'),
+    startDate: start.format('YYYY-MM-DD'),
+    endDate: end.format('YYYY-MM-DD'),
   };
 }
 
@@ -121,15 +121,15 @@ function getDefaultRangePanelMonths() {
 
 /**
  * @param {object} props
- * @param {string} [props.startTime] YYYY-MM-DD
- * @param {string} [props.endTime] YYYY-MM-DD
- * @param {(next: { startTime?: string, endTime?: string }) => void} [props.onFilterChange]
+ * @param {string} [props.startDate] YYYY-MM-DD
+ * @param {string} [props.endDate] YYYY-MM-DD
+ * @param {(next: { startDate?: string, endDate?: string }) => void} [props.onFilterChange]
  */
-export default function OverviewFilter({ startTime, endTime, onFilterChange }) {
+export default function OverviewFilter({ startDate, endDate, onFilterChange }) {
   const initialRange = useMemo(() => {
-    if (startTime && endTime) return [dayjs(startTime), dayjs(endTime)];
+    if (startDate && endDate) return [dayjs(startDate), dayjs(endDate)];
     return null;
-  }, [startTime, endTime]);
+  }, [startDate, endDate]);
 
   const [draftRange, setDraftRange] = useState(initialRange);
   const [dirty, setDirty] = useState(false);
@@ -143,7 +143,7 @@ export default function OverviewFilter({ startTime, endTime, onFilterChange }) {
     setDraftRange(dates);
     const nextStart = dates?.[0]?.format('YYYY-MM-DD');
     const nextEnd = dates?.[1]?.format('YYYY-MM-DD');
-    setDirty(nextStart !== startTime || nextEnd !== endTime);
+    setDirty(nextStart !== startDate || nextEnd !== endDate);
   };
 
   const handleReset = () => {
@@ -152,9 +152,9 @@ export default function OverviewFilter({ startTime, endTime, onFilterChange }) {
   };
 
   const timeHints = useMemo(() => {
-    if (!startTime || !endTime) return null;
-    return buildFilterTimeHints(startTime, endTime);
-  }, [startTime, endTime]);
+    if (!startDate || !endDate) return null;
+    return buildFilterTimeHints(startDate, endDate);
+  }, [startDate, endDate]);
 
   const calendarYearMonth = dayjs().format('YYYY-MM');
   const defaultPickerValue = useMemo(() => getDefaultRangePanelMonths(), [calendarYearMonth]);
@@ -178,7 +178,7 @@ export default function OverviewFilter({ startTime, endTime, onFilterChange }) {
     }
     const nextStart = start?.format('YYYY-MM-DD');
     const nextEnd = end?.format('YYYY-MM-DD');
-    onFilterChange?.({ startTime: nextStart, endTime: nextEnd });
+    onFilterChange?.({ startDate: nextStart, endDate: nextEnd });
     setDirty(false);
   };
 

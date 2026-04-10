@@ -206,15 +206,15 @@ function cloneMockViewHistogramNew() {
 
 /**
  * 构造与后端约定一致的请求体：
- * public class OverviewRequest { String startTime; String endTime; Map<String, String> addtionalParams; }
+ * public class OverviewRequest { String startDate; String endDate; Map<String, String> addtionalParams; }
  * @param {string} startDate
  * @param {string} endDate
  * @param {Record<string, string>} [addtionalParams]
  */
 function buildOverviewRequest(startDate, endDate, addtionalParams) {
   return {
-    startTime: startDate,
-    endTime: endDate,
+    startDate,
+    endDate,
     addtionalParams: addtionalParams ?? {},
   };
 }

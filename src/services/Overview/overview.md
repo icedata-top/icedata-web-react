@@ -10,8 +10,8 @@
 
 ```java
 public class OverviewRequest {
-    String startTime;
-    String endTime;
+    String startDate;
+    String endDate;
     Map<String, String> addtionalParams;
 }
 ```
