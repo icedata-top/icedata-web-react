@@ -14,9 +14,24 @@ const typeLabelMap = {
  */
 export default function UniSeekItem({ item }) {
   const tagText = typeLabelMap[item.type] ?? item.type;
+  const mediaTypeClass =
+    item.type === 'video'
+      ? 'uniseek-item-media--video'
+      : item.type === 'producer'
+        ? 'uniseek-item-media--producer'
+        : 'uniseek-item-media--vocal';
 
   return (
     <Card className="uniseek-item-card" bordered={false}>
+      <div className={`uniseek-item-media-wrap ${mediaTypeClass}`}>
+        {item.coverUrl ? (
+          <img src={item.coverUrl} alt={item.title} className="uniseek-item-media-image" />
+        ) : (
+          <div className="uniseek-item-media-placeholder" aria-hidden />
+        )}
+        <div className="uniseek-item-media-overlay" aria-hidden />
+      </div>
+
       <div className="uniseek-item-top">
         <Tag className="uniseek-item-tag">{tagText}</Tag>
         <Text type="secondary" className="uniseek-item-id">
