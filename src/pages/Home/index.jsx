@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Input, Spin, Statistic, message } from 'antd';
 import { ApiError } from '../../services/http/client.js';
 import { fetchHomeOverview, mapHomeDataToStats } from '../../services/Home/home.api.js';
@@ -8,6 +8,7 @@ import './index.css';
 const { Search } = Input;
 
 export default function Home() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,6 +39,12 @@ export default function Home() {
     };
   }, []);
 
+  const handleSearch = (rawValue) => {
+    const keyword = (rawValue ?? '').trim();
+    if (!keyword) return;
+    navigate(`/uniseek?keyword=${encodeURIComponent(keyword)}`);
+  };
+
   return (
     <div className="home-page">
       <section className="home-hero">
@@ -53,7 +60,7 @@ export default function Home() {
             enterButton
             size="large"
             className="home-search-input"
-            onSearch={() => {}}
+            onSearch={handleSearch}
           />
         </div>
       </section>
