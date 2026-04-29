@@ -240,15 +240,27 @@ export function fetchOverviewViewHistogram(startDate, endDate, scope = 'all') {
   });
 }
 
+export const OVERVIEW_TREND_TYPE = Object.freeze({
+  NEW_VIDEO: 'newVideo',
+  ACTIVE_USER: 'activeUser',
+  VIDEO_STATS: 'videoStats',
+});
+
 /**
  * 获取趋势折线数据（MOCK）
  * @param {string} startDate YYYY-MM-DD
  * @param {string} endDate YYYY-MM-DD
+ * @param {string} [trendType='newVideo'] 趋势类型（由前端 Tab 选择）
  * @returns {Promise<ApiResult<OverviewTrendPayload>>}
  */
-export function fetchOverviewTrend(startDate, endDate) {
+export function fetchOverviewTrend(startDate, endDate, trendType = OVERVIEW_TREND_TYPE.NEW_VIDEO) {
   if (!isMockEnv()) {
-    return postJson('/overview/get-trend', buildOverviewRequest(startDate, endDate));
+    const requestBody = buildOverviewRequest(startDate, endDate);
+    requestBody.addtionalParams = {
+      ...(requestBody.addtionalParams ?? {}),
+      trendType,
+    };
+    return postJson('/overview/get-trend', requestBody);
   }
 
   return Promise.resolve({

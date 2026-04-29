@@ -12,6 +12,7 @@ import {
   fetchOverviewPartitionSubmissions,
   fetchOverviewTrend,
   fetchOverviewViewHistogram,
+  OVERVIEW_TREND_TYPE,
 } from '../../services/Overview/overview.api.js';
 import './index.css';
 
@@ -47,6 +48,7 @@ export default function Overview() {
   });
   const [partitionScope, setPartitionScope] = useState('all');
   const [histogramScope, setHistogramScope] = useState('all');
+  const [trendType, setTrendType] = useState(OVERVIEW_TREND_TYPE.NEW_VIDEO);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const isMobile = useIsMobile();
 
@@ -58,25 +60,38 @@ export default function Overview() {
     message.error(err?.message || '请求失败');
   }, []);
 
-  const loadMain = useCallback((startDate, endDate) => {
+  const loadIndicators = useCallback((startDate, endDate) => {
     setLoading(true);
-    Promise.all([
-      fetchOverviewIndicators(startDate, endDate),
-      fetchOverviewTrend(startDate, endDate),
-    ])
-      .then(([indicatorsData, trendData]) => {
+    fetchOverviewIndicators(startDate, endDate)
+      .then((indicatorsData) => {
         setPayload((prev) => ({
           ...prev,
           indicators: indicatorsData?.indicators ?? [],
-          trend: trendData?.rows ?? [],
         }));
       })
       .catch((err) => {
-        setPayload((prev) => ({ ...prev, indicators: [], trend: [] }));
+        setPayload((prev) => ({ ...prev, indicators: [] }));
         showApiError(err);
       })
       .finally(() => setLoading(false));
   }, [showApiError]);
+
+  const loadTrend = useCallback(
+    (startDate, endDate, type) => {
+      fetchOverviewTrend(startDate, endDate, type)
+        .then((trendData) => {
+          setPayload((prev) => ({
+            ...prev,
+            trend: trendData?.rows ?? [],
+          }));
+        })
+        .catch((err) => {
+          setPayload((prev) => ({ ...prev, trend: [] }));
+          showApiError(err);
+        });
+    },
+    [showApiError],
+  );
 
   const loadPartition = useCallback(
     (startDate, endDate, scope) => {
@@ -108,11 +123,16 @@ export default function Overview() {
 
   useEffect(() => {
     if (filter?.startDate && filter?.endDate) {
-      loadMain(filter.startDate, filter.endDate);
+      loadIndicators(filter.startDate, filter.endDate);
     } else {
       setPayload({ indicators: [], trend: [], partitionSubmissions: [], viewHistogram: [] });
     }
-  }, [filter, loadMain]);
+  }, [filter, loadIndicators]);
+
+  useEffect(() => {
+    if (!filter?.startDate || !filter?.endDate) return;
+    loadTrend(filter.startDate, filter.endDate, trendType);
+  }, [filter, trendType, loadTrend]);
 
   useEffect(() => {
     if (!filter?.startDate || !filter?.endDate) return;
@@ -209,7 +229,11 @@ export default function Overview() {
             </section>
           </Card>
 
-          <OverviewTrendChart trend={payload?.trend ?? []} />
+          <OverviewTrendChart
+            trend={payload?.trend ?? []}
+            activeTab={trendType}
+            onTabChange={setTrendType}
+          />
 
           <OverviewPartitionPieChart
             rows={payload?.partitionSubmissions ?? []}

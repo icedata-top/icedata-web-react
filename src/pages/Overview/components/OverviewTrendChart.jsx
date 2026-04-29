@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Card, Tabs, Typography } from 'antd';
 import VChart from '@visactor/vchart';
 import { useDocThemeDark } from '../../../hooks/useDocThemeDark.js';
@@ -8,9 +8,9 @@ const { Text } = Typography;
 
 /** @typedef {{ date: string, indicators: Record<string, number> }} TrendDay */
 
-const TAB_NEW_VIDEO = 'newVideo';
-const TAB_ACTIVE_USER = 'activeUser';
-const TAB_VIDEO_STATS = 'videoStats';
+export const TAB_NEW_VIDEO = 'newVideo';
+export const TAB_ACTIVE_USER = 'activeUser';
+export const TAB_VIDEO_STATS = 'videoStats';
 
 /** 视频数据 Tab：折线维度（与后端字段一致） */
 export const VIDEO_TREND_METRICS = [
@@ -113,14 +113,15 @@ function buildLineSpec(tab, trend) {
 /**
  * @param {object} props
  * @param {TrendDay[]} props.trend
+ * @param {string} [props.activeTab]
+ * @param {(tab: string) => void} [props.onTabChange]
  */
-export default function OverviewTrendChart({ trend }) {
-  const [tab, setTab] = useState(TAB_NEW_VIDEO);
+export default function OverviewTrendChart({ trend, activeTab = TAB_NEW_VIDEO, onTabChange }) {
   const hostRef = useRef(null);
   const chartRef = useRef(null);
   const isDark = useDocThemeDark();
 
-  const spec = useMemo(() => buildLineSpec(tab, trend), [tab, trend]);
+  const spec = useMemo(() => buildLineSpec(activeTab, trend), [activeTab, trend]);
 
   useEffect(() => {
     const el = hostRef.current;
@@ -182,7 +183,13 @@ export default function OverviewTrendChart({ trend }) {
   return (
     <Card className="overview-panel overview-panel--trend" bordered={false} title="趋势图">
       <div className="overview-trend-card-inner">
-        <Tabs activeKey={tab} onChange={setTab} items={tabItems} size="small" className="overview-trend-tabs" />
+        <Tabs
+          activeKey={activeTab}
+          onChange={(tab) => onTabChange?.(tab)}
+          items={tabItems}
+          size="small"
+          className="overview-trend-tabs"
+        />
         {empty ? (
           <div className="overview-trend-chart-empty">
             <Text type="secondary">暂无趋势数据，请先选择日期范围。</Text>
