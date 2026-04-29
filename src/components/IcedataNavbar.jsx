@@ -8,9 +8,9 @@ import './IcedataNavbar.css';
 const menuItems = [
   { key: 'home', label: '首页' },
   { key: 'overview', label: '总览' },
-  { key: 'songs', label: '歌曲' },
-  { key: 'vocaloid', label: '虚拟歌手' },
-  { key: 'creators', label: '创作者' },
+  { key: 'videos', label: '歌曲' },
+  { key: 'vocals', label: '虚拟歌手' },
+  { key: 'producers', label: '创作者' },
   {
     key: 'links',
     label: '友情链接',

@@ -22,12 +22,9 @@ export default function App() {
         <Route path="/" element={<AppLayout />}>
           <Route index element={<Home />} />
           <Route path="overview" element={<Overview />} />
-          <Route path="songs" element={<UnderDevelopment />} />
-          <Route path="songs/search" element={<UnderDevelopment />} />
-          <Route path="songs/detail" element={<UnderDevelopment />} />
-          <Route path="songs/ranking" element={<UnderDevelopment />} />
-          <Route path="vocaloid" element={<UnderDevelopment />} />
-          <Route path="creators" element={<UnderDevelopment />} />
+          <Route path="videos" element={<UnderDevelopment />} />
+          <Route path="vocals" element={<UnderDevelopment />} />
+          <Route path="producers" element={<UnderDevelopment />} />
           <Route path="about" element={<About />} />
           <Route path="*" element={<NotFound />} />
         </Route>
