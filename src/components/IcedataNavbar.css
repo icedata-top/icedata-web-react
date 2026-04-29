@@ -146,12 +146,22 @@
   background: var(--card-bg);
 }
 
+.icedata-lang-toggle {
+  border-radius: 8px;
+  border-color: var(--border);
+  color: var(--text);
+  background: var(--card-bg);
+  font-weight: 700;
+}
+
 .icedata-theme-toggle .anticon {
   font-size: 16px;
 }
 
 .icedata-theme-toggle:hover,
-.icedata-theme-toggle:focus {
+.icedata-theme-toggle:focus,
+.icedata-lang-toggle:hover,
+.icedata-lang-toggle:focus {
   color: var(--theme-primary) !important;
   border-color: var(--theme-accent) !important;
 }
