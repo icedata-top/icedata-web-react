@@ -4,10 +4,10 @@ import './IndicatorCell.css';
 
 /** 指标 name → 展示名（无映射时回退为 name） */
 const INDICATOR_TITLE = {
-  newVideoCount: '新增视频数',
+  newVideoCount: '新投稿视频数',
   activeUserCount: '活跃创作者数',
-  view: '播放量',
-  favorite: '收藏量',
+  view: '中术300播放',
+  favorite: '中术300收藏',
 };
 
 /**

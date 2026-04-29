@@ -51,7 +51,7 @@ function buildLineSpec(tab, trend) {
       crosshair: { xField: { visible: true } },
       axes: [
         { orient: 'bottom', type: 'band' },
-        { orient: 'left', title: { visible: true, text: '新增投稿数' } },
+        { orient: 'left', title: { visible: true, text: '新投稿视频数' } },
       ],
     };
   }
@@ -170,9 +170,9 @@ export default function OverviewTrendChart({ trend }) {
 
   const tabItems = useMemo(
     () => [
-      { key: TAB_NEW_VIDEO, label: '新增投稿数' },
+      { key: TAB_NEW_VIDEO, label: '新投稿视频数' },
       { key: TAB_ACTIVE_USER, label: '活跃创作者数' },
-      { key: TAB_VIDEO_STATS, label: '视频数据' },
+      { key: TAB_VIDEO_STATS, label: '中术300视频数据' },
     ],
     [],
   );
