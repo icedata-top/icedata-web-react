@@ -1,0 +1,10 @@
+services:
+  icedata-web-react:
+    build:
+      context: .
+      args:
+        VITE_APP_ENV: DEV
+    image: icedata-web-react:local
+    ports:
+      - "5173:80"
+    restart: unless-stopped
