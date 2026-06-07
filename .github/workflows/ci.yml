@@ -27,6 +27,8 @@ jobs:
 
       - name: Build app
         run: npm run build
+        env:
+          VITE_APP_ENV: PROD
 
       - name: Build Docker image
         run: docker build --build-arg VITE_APP_ENV=PROD --tag icedata-web-react:ci .
