@@ -1,10 +1,6 @@
 services:
   icedata-web-react:
-    build:
-      context: .
-      args:
-        VITE_APP_ENV: DEV
-    image: icedata-web-react:local
+    image: ${ICEDATA_WEB_IMAGE:-ghcr.io/icedata-top/icedata-web-react:main}
     environment:
       ICEDATA_API_BASE_URL: /api
       ICEDATA_API_UPSTREAM: http://icedata-backend:8080
@@ -15,9 +11,7 @@ services:
     restart: unless-stopped
 
   icedata-backend:
-    build:
-      context: ../hantang-web-backend
-    image: hantang-web-backend:local
+    image: ${ICEDATA_BACKEND_IMAGE:-ghcr.io/icedata-top/hantang-web-backend:main}
     volumes:
       - ${ICEDATA_BACKEND_CONFIG_SECRET:?Set ICEDATA_BACKEND_CONFIG_SECRET to the backend config.secret.properties path}:/app/config.secret.properties:ro
     expose:

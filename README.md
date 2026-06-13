@@ -36,10 +36,13 @@
 ICEDATA_API_BASE_URL=/api
 ICEDATA_API_UPSTREAM=http://icedata-backend:8080
 ICEDATA_BACKEND_CONFIG_SECRET=/path/to/config.secret.properties
+ICEDATA_WEB_IMAGE=ghcr.io/icedata-top/icedata-web-react:main
+ICEDATA_BACKEND_IMAGE=ghcr.io/icedata-top/hantang-web-backend:main
 ```
 
 其中 `ICEDATA_API_BASE_URL` 是浏览器请求的同源前缀，`ICEDATA_API_UPSTREAM` 是 Caddy 容器内访问后端的地址。
 `ICEDATA_BACKEND_CONFIG_SECRET` 是后端容器启动需要的数据库配置文件路径。
+`docker-compose.yml` 默认直接从 GHCR 拉取前端和后端的 `main` 镜像，可通过 `ICEDATA_WEB_IMAGE` 和 `ICEDATA_BACKEND_IMAGE` 覆盖。
 
 ### 如何切换环境
 
