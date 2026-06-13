@@ -14,7 +14,6 @@ jobs:
   sync-npm-lock:
     name: Sync npm lockfile
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
     permissions:
       contents: write
 
@@ -44,11 +43,19 @@ jobs:
         run: npm install --package-lock-only --ignore-scripts
 
       - name: Commit npm lockfile
-        if: steps.changes.outputs.lock-inputs == 'true'
+        if: >
+          github.event_name == 'push' &&
+          github.actor != 'github-actions[bot]' &&
+          steps.changes.outputs.lock-inputs == 'true'
         uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: "chore: sync npm lockfile"
           file_pattern: package-lock.json
+
+      - name: Check npm lockfile
+        if: github.event_name == 'pull_request' && steps.changes.outputs.lock-inputs == 'true'
+        run: |
+          git diff --exit-code -- package-lock.json
 
   build:
     name: Build React app and Docker image
