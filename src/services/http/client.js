@@ -20,8 +20,7 @@ export class ApiError extends Error {
  * @param {unknown} [body]
  */
 export async function postJson(path, body) {
-  const baseUrl = getApiBaseUrl();
-  const url = new URL(path, `${baseUrl || window.location.origin}/`);
+  const url = buildApiUrl(path);
   const requestBody = JSON.stringify(body ?? {});
   const dedupeKey = `${url.toString()}::${requestBody}`;
 
@@ -50,6 +49,23 @@ export async function postJson(path, body) {
 
   inFlightRequestMap.set(dedupeKey, requestPromise);
   return requestPromise;
+}
+
+function buildApiUrl(path) {
+  const baseUrl = getApiBaseUrl();
+  const normalizedPath = String(path).replace(/^\/+/, '');
+
+  if (!baseUrl) {
+    return new URL(`/${normalizedPath}`, window.location.origin);
+  }
+
+  const normalizedBase = String(baseUrl).replace(/\/+$/, '');
+  if (/^https?:\/\//i.test(normalizedBase)) {
+    return new URL(normalizedPath, `${normalizedBase}/`);
+  }
+
+  const basePath = normalizedBase.replace(/^\/+/, '');
+  return new URL(`/${basePath}/${normalizedPath}`, window.location.origin);
 }
 
 function unwrapPayload(raw) {

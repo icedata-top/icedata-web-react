@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "pnpm@11.6.0",
   "scripts": {
     "start": "vite",
     "dev": "vite",
@@ -10,8 +11,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.1.1",
     "@visactor/vchart": "^2.0.21",
     "antd": "^6.3.5",
+    "dayjs": "^1.11.20",
     "i18next": "^26.0.8",
     "i18next-browser-languagedetector": "^8.2.1",
     "i18next-http-backend": "^3.0.6",

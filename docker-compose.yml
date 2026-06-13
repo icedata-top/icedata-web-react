@@ -6,7 +6,20 @@ services:
         VITE_APP_ENV: DEV
     image: icedata-web-react:local
     environment:
-      ICEDATA_API_BASE_URL: http://localhost:8080
+      ICEDATA_API_BASE_URL: /api
+      ICEDATA_API_UPSTREAM: http://icedata-backend:8080
     ports:
       - "5173:80"
+    depends_on:
+      - icedata-backend
+    restart: unless-stopped
+
+  icedata-backend:
+    build:
+      context: ../hantang-web-backend
+    image: hantang-web-backend:local
+    volumes:
+      - ${ICEDATA_BACKEND_CONFIG_SECRET:?Set ICEDATA_BACKEND_CONFIG_SECRET to the backend config.secret.properties path}:/app/config.secret.properties:ro
+    expose:
+      - "8080"
     restart: unless-stopped
