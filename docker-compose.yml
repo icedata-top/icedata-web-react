@@ -1,6 +1,7 @@
 services:
   icedata-web-react:
     image: ${ICEDATA_WEB_IMAGE:-ghcr.io/icedata-top/icedata-web-react:main}
+    pull_policy: always
     environment:
       ICEDATA_API_BASE_URL: /api
       ICEDATA_API_UPSTREAM: http://icedata-backend:8080
@@ -12,6 +13,7 @@ services:
 
   icedata-backend:
     image: ${ICEDATA_BACKEND_IMAGE:-ghcr.io/icedata-top/hantang-web-backend:main}
+    pull_policy: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
     configs:
