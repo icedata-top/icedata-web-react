@@ -5,9 +5,11 @@ import OverviewFilter, { getDefaultOverviewFilter } from './components/OverviewF
 import OverviewTrendChart from './components/OverviewTrendChart.jsx';
 import OverviewPartitionPieChart from './components/OverviewPartitionPieChart.jsx';
 import OverviewViewHistogramChart from './components/OverviewViewHistogramChart.jsx';
+import OverviewGateCrossingsTable from './components/OverviewGateCrossingsTable.jsx';
 import IndicatorCell from './components/IndicatorCell.jsx';
 import { ApiError } from '../../services/http/client.js';
 import {
+  fetchOverviewGateCrossings,
   fetchOverviewIndicators,
   fetchOverviewPartitionSubmissions,
   fetchOverviewTrend,
@@ -20,6 +22,7 @@ const { Text } = Typography;
 
 /** 与 CSS 中 @media 一致：小于此宽度视为移动端，筛选走抽屉 */
 const MOBILE_MAX_PX = 767;
+const GATE_CROSSINGS_PAGE_SIZE = 8;
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(() =>
@@ -45,7 +48,11 @@ export default function Overview() {
     trend: [],
     partitionSubmissions: [],
     viewHistogram: [],
+    gateCrossings: [],
+    gateCrossingsTotal: 0,
   });
+  const [gateCrossingsLoading, setGateCrossingsLoading] = useState(false);
+  const [gateCrossingsPage, setGateCrossingsPage] = useState(1);
   const [partitionScope, setPartitionScope] = useState('all');
   const [histogramScope, setHistogramScope] = useState('all');
   const [trendType, setTrendType] = useState(OVERVIEW_TREND_TYPE.NEW_VIDEO);
@@ -121,11 +128,41 @@ export default function Overview() {
     [showApiError],
   );
 
+  const loadGateCrossings = useCallback(
+    (startDate, endDate, page) => {
+      setGateCrossingsLoading(true);
+      fetchOverviewGateCrossings(startDate, endDate, {
+        page,
+        pageSize: GATE_CROSSINGS_PAGE_SIZE,
+      })
+        .then((data) => {
+          setPayload((prev) => ({
+            ...prev,
+            gateCrossings: data?.rows ?? [],
+            gateCrossingsTotal: data?.total ?? 0,
+          }));
+        })
+        .catch((err) => {
+          setPayload((prev) => ({ ...prev, gateCrossings: [], gateCrossingsTotal: 0 }));
+          showApiError(err);
+        })
+        .finally(() => setGateCrossingsLoading(false));
+    },
+    [showApiError],
+  );
+
   useEffect(() => {
     if (filter?.startDate && filter?.endDate) {
       loadIndicators(filter.startDate, filter.endDate);
     } else {
-      setPayload({ indicators: [], trend: [], partitionSubmissions: [], viewHistogram: [] });
+      setPayload({
+        indicators: [],
+        trend: [],
+        partitionSubmissions: [],
+        viewHistogram: [],
+        gateCrossings: [],
+        gateCrossingsTotal: 0,
+      });
     }
   }, [filter, loadIndicators]);
 
@@ -143,6 +180,15 @@ export default function Overview() {
     if (!filter?.startDate || !filter?.endDate) return;
     loadHistogram(filter.startDate, filter.endDate, histogramScope);
   }, [filter, histogramScope, loadHistogram]);
+
+  useEffect(() => {
+    setGateCrossingsPage(1);
+  }, [filter]);
+
+  useEffect(() => {
+    if (!filter?.startDate || !filter?.endDate) return;
+    loadGateCrossings(filter.startDate, filter.endDate, gateCrossingsPage);
+  }, [filter, gateCrossingsPage, loadGateCrossings]);
 
   useEffect(() => {
     if (!isMobile) {
@@ -248,11 +294,14 @@ export default function Overview() {
             onScopeChange={setHistogramScope}
           />
 
-          {/* <Card className="overview-panel overview-panel--mock" bordered={false} title="明细表（占位）">
-            <div className="overview-mock-block" role="presentation">
-              <Text type="secondary">此处为明细表格占位（MOCK）。</Text>
-            </div>
-          </Card> */}
+          <OverviewGateCrossingsTable
+            rows={payload?.gateCrossings ?? []}
+            total={payload?.gateCrossingsTotal ?? 0}
+            page={gateCrossingsPage}
+            pageSize={GATE_CROSSINGS_PAGE_SIZE}
+            loading={gateCrossingsLoading}
+            onPageChange={setGateCrossingsPage}
+          />
         </div>
       </div>
     </div>

@@ -6,6 +6,10 @@
  *
  * 可通过 Vite 环境变量覆盖（可选）：
  * - VITE_APP_ENV=MOCK|DEV|PROD
+ * - VITE_API_BASE_URL=http://localhost:8080
+ *
+ * Docker/Nginx 部署可通过 /runtime-config.js 注入：
+ * - window.__ICEDATA_RUNTIME_CONFIG__.apiBaseUrl
  */
 
 export const APP_ENV = Object.freeze({
@@ -26,6 +30,10 @@ const BASE_URL_BY_ENV = Object.freeze({
   [APP_ENV.PROD]: 'https://www.icedata.top',
 });
 
+const RUNTIME_CONFIG = globalThis.window?.__ICEDATA_RUNTIME_CONFIG__ ?? {};
+const VITE_API_BASE_URL = normalizeBaseUrl(import.meta.env?.VITE_API_BASE_URL);
+const RUNTIME_API_BASE_URL = normalizeBaseUrl(RUNTIME_CONFIG.apiBaseUrl);
+
 /** 是否走 MOCK */
 export function isMockEnv() {
   return CURRENT_APP_ENV === APP_ENV.MOCK;
@@ -33,6 +41,8 @@ export function isMockEnv() {
 
 /** 返回当前环境下 API base url；MOCK 环境返回空串 */
 export function getApiBaseUrl() {
+  if (RUNTIME_API_BASE_URL) return RUNTIME_API_BASE_URL;
+  if (VITE_API_BASE_URL) return VITE_API_BASE_URL;
   if (isMockEnv()) return '';
   return BASE_URL_BY_ENV[CURRENT_APP_ENV] ?? BASE_URL_BY_ENV[APP_ENV.DEV];
 }
@@ -44,4 +54,10 @@ function normalizeAppEnv(value) {
     return upper;
   }
   return null;
+}
+
+function normalizeBaseUrl(value) {
+  if (value == null) return null;
+  const trimmed = String(value).trim();
+  return trimmed || null;
 }

@@ -1,0 +1,12 @@
+services:
+  icedata-web-react:
+    build:
+      context: .
+      args:
+        VITE_APP_ENV: DEV
+    image: icedata-web-react:local
+    environment:
+      ICEDATA_API_BASE_URL: http://localhost:8080
+    ports:
+      - "5173:80"
+    restart: unless-stopped

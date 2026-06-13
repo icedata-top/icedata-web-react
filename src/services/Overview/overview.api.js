@@ -9,6 +9,7 @@
  * - fetchOverviewTrend                 -> /overview/get-trend                 （折线图卡片）
  * - fetchOverviewPartitionSubmissions  -> /overview/get-partition-submissions （饼图卡片）
  * - fetchOverviewViewHistogram         -> /overview/get-view-histogram        （直方图卡片）
+ * - fetchOverviewGateCrossings         -> /overview/get-gate-crossings        （过线明细）
  */
 import { isMockEnv } from '../../config/runtimeEnv.js';
 import { postJson } from '../http/client.js';
@@ -50,6 +51,17 @@ export const OVERVIEW_API_CODE = {
  */
 
 /**
+ * @typedef {Object} OverviewGateCrossing
+ * @property {number} id
+ * @property {number} aid
+ * @property {number} gateValue
+ * @property {number|null} previousView
+ * @property {number|null} currentView
+ * @property {string} crossedAt
+ * @property {string} createdAt
+ */
+
+/**
  * @typedef {Object} OverviewPartitionSubmissionsPayload
  * @property {string} startDate
  * @property {string} endDate
@@ -61,6 +73,14 @@ export const OVERVIEW_API_CODE = {
  * @property {string} startDate
  * @property {string} endDate
  * @property {OverviewTrendDay[]} rows
+ */
+
+/**
+ * @typedef {Object} OverviewGateCrossingsPayload
+ * @property {OverviewGateCrossing[]} rows
+ * @property {number} total
+ * @property {number} page
+ * @property {number} pageSize
  */
 
 /**
@@ -204,6 +224,59 @@ function cloneMockViewHistogramNew() {
   return MOCK_VIEW_HISTOGRAM_NEW_BASE.map((row) => ({ ...row }));
 }
 
+const MOCK_GATE_CROSSINGS = [
+  {
+    id: 1064,
+    aid: 114953020368274,
+    gateValue: 100000,
+    previousView: 99872,
+    currentView: 100138,
+    crossedAt: '2026-04-03T18:24:10Z',
+    createdAt: '2026-04-03T18:24:10Z',
+  },
+  {
+    id: 1063,
+    aid: 105602919693194,
+    gateValue: 10000,
+    previousView: 9941,
+    currentView: 10016,
+    crossedAt: '2026-04-03T16:41:32Z',
+    createdAt: '2026-04-03T16:41:32Z',
+  },
+  {
+    id: 1062,
+    aid: 1906278059,
+    gateValue: 1000000,
+    previousView: 999410,
+    currentView: 1000264,
+    crossedAt: '2026-04-02T23:07:45Z',
+    createdAt: '2026-04-02T23:07:45Z',
+  },
+  {
+    id: 1061,
+    aid: 701048642,
+    gateValue: 1000,
+    previousView: 982,
+    currentView: 1003,
+    crossedAt: '2026-04-02T14:19:02Z',
+    createdAt: '2026-04-02T14:19:02Z',
+  },
+  {
+    id: 1060,
+    aid: 1558453307,
+    gateValue: 200000,
+    previousView: 199734,
+    currentView: 200041,
+    crossedAt: '2026-04-01T08:12:55Z',
+    createdAt: '2026-04-01T08:12:55Z',
+  },
+];
+
+function cloneMockGateCrossings(page, pageSize) {
+  const start = (page - 1) * pageSize;
+  return MOCK_GATE_CROSSINGS.slice(start, start + pageSize).map((row) => ({ ...row }));
+}
+
 /**
  * 构造与后端约定一致的请求体：
  * public class OverviewRequest { String startDate; String endDate; Map<String, String> addtionalParams; }
@@ -237,6 +310,37 @@ export function fetchOverviewViewHistogram(startDate, endDate, scope = 'all') {
     startDate,
     endDate,
     rows: isNewScope ? cloneMockViewHistogramNew() : cloneMockViewHistogram(),
+  });
+}
+
+/**
+ * 获取播放量过线记录
+ * @param {string} startDate YYYY-MM-DD
+ * @param {string} endDate YYYY-MM-DD
+ * @param {{ page?: number, pageSize?: number, aid?: string|number }} [options]
+ * @returns {Promise<ApiResult<OverviewGateCrossingsPayload>>}
+ */
+export function fetchOverviewGateCrossings(startDate, endDate, options = {}) {
+  const page = Math.max(1, Number(options.page ?? 1));
+  const pageSize = Math.max(1, Number(options.pageSize ?? 8));
+  const addtionalParams = {
+    page: String(page),
+    pageSize: String(pageSize),
+  };
+
+  if (options.aid != null && String(options.aid).trim()) {
+    addtionalParams.aid = String(options.aid).trim();
+  }
+
+  if (!isMockEnv()) {
+    return postJson('/overview/get-gate-crossings', buildOverviewRequest(startDate, endDate, addtionalParams));
+  }
+
+  return Promise.resolve({
+    rows: cloneMockGateCrossings(page, pageSize),
+    total: MOCK_GATE_CROSSINGS.length,
+    page,
+    pageSize,
   });
 }
 
