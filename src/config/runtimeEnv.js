@@ -6,9 +6,9 @@
  *
  * 可通过 Vite 环境变量覆盖（可选）：
  * - VITE_APP_ENV=MOCK|DEV|PROD
- * - VITE_API_BASE_URL=http://localhost:8080
+ * - VITE_API_BASE_URL=/api
  *
- * Docker/Nginx 部署可通过 /runtime-config.js 注入：
+ * Docker/Caddy 部署可通过 /runtime-config.js 注入：
  * - window.__ICEDATA_RUNTIME_CONFIG__.apiBaseUrl
  */
 
@@ -26,8 +26,8 @@ export const CURRENT_APP_ENV = normalizeAppEnv(import.meta.env?.VITE_APP_ENV) ??
 
 /** DEV / PROD 的 base url（不含路径） */
 const BASE_URL_BY_ENV = Object.freeze({
-  [APP_ENV.DEV]: 'http://localhost:8080',
-  [APP_ENV.PROD]: 'https://www.icedata.top',
+  [APP_ENV.DEV]: '/api',
+  [APP_ENV.PROD]: '/api',
 });
 
 const RUNTIME_CONFIG = globalThis.window?.__ICEDATA_RUNTIME_CONFIG__ ?? {};

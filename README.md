@@ -2,9 +2,9 @@
 基于 React 的 icedata 前端项目
 
 ## Quick start
-1. 安装依赖：`npm install`
-2. 启动开发服务器：`npm start`
-3. 打包构建：`npm run build`
+1. 安装依赖：`pnpm install`
+2. 启动开发服务器：`pnpm start`
+3. 打包构建：`pnpm run build`
 
 启动后默认在 `http://localhost:5173/` 访问。
 
@@ -20,26 +20,26 @@
 
 - `MOCK`
   - 各 `xxx.api.js` 直接返回本地 MOCK 数据，不发起后端请求
-  - 仅需启动前端：`npm start`
+  - 仅需启动前端：`pnpm start`
 - `DEV`
   - 前端会发起真实 HTTP 请求
-  - 需要同时启动后端服务（默认指向 `http://localhost:8080`）
+  - 默认请求同源 `/api`，容器部署时由 Caddy 转发到后端服务
 - `PROD`
   - 前端会发起真实 HTTP 请求
-  - 默认指向生产域名 `https://www.icedata.top`
+  - 默认请求同源 `/api`，容器部署时由 Caddy 转发到后端服务
 
-### 如何修改开发环境 socket（后端地址）
+### 如何修改 API base URL
 
-请编辑 `src/config/runtimeEnv.js` 中的 `BASE_URL_BY_ENV`：
+容器部署时可通过环境变量注入：
 
-```js
-const BASE_URL_BY_ENV = Object.freeze({
-  DEV: 'http://localhost:8080',
-  PROD: 'https://www.icedata.top',
-});
+```sh
+ICEDATA_API_BASE_URL=/api
+ICEDATA_API_UPSTREAM=http://icedata-backend:8080
+ICEDATA_BACKEND_CONFIG_SECRET=/path/to/config.secret.properties
 ```
 
-将 `DEV` 对应值改为你的开发后端地址（例如内网 IP、端口等）。
+其中 `ICEDATA_API_BASE_URL` 是浏览器请求的同源前缀，`ICEDATA_API_UPSTREAM` 是 Caddy 容器内访问后端的地址。
+`ICEDATA_BACKEND_CONFIG_SECRET` 是后端容器启动需要的数据库配置文件路径。
 
 ### 如何切换环境
 
@@ -58,6 +58,9 @@ icedata-web-react/
 ├── index.html                 # 入口 HTML（站点标题、favicon）
 ├── package.json
 ├── package-lock.json
+├── pnpm-lock.yaml
+├── Caddyfile
+├── docker-compose.yml
 ├── vite.config.js
 ├── public/
 │   ├── png/                   # Logo 等位图

@@ -9,28 +9,79 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
+  sync-npm-lock:
+    name: Sync npm lockfile
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Detect lock inputs
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            lock-inputs:
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+
+      - name: Set up Node.js
+        if: steps.changes.outputs.lock-inputs == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Export npm lockfile
+        if: steps.changes.outputs.lock-inputs == 'true'
+        run: npm install --package-lock-only --ignore-scripts
+
+      - name: Commit npm lockfile
+        if: >
+          github.event_name == 'push' &&
+          github.actor != 'github-actions[bot]' &&
+          steps.changes.outputs.lock-inputs == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v6
+        with:
+          commit_message: "chore: sync npm lockfile"
+          file_pattern: package-lock.json
+
+      - name: Check npm lockfile
+        if: github.event_name == 'pull_request' && steps.changes.outputs.lock-inputs == 'true'
+        run: |
+          git diff --exit-code -- package-lock.json
+
   build:
     name: Build React app and Docker image
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Enable pnpm
+        run: corepack enable pnpm
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build app
-        run: npm run build
+        run: pnpm run build
         env:
           VITE_APP_ENV: PROD
 
@@ -43,6 +94,9 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr,prefix=pr-,suffix=-head
             type=sha,format=short
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to GitHub Container Registry
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
@@ -61,3 +115,5 @@ jobs:
           push: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
