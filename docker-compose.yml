@@ -12,6 +12,8 @@ services:
 
   icedata-backend:
     image: ${ICEDATA_BACKEND_IMAGE:-ghcr.io/icedata-top/hantang-web-backend:main}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     configs:
       - source: icedata-backend-config
         target: /app/config.secret.properties
