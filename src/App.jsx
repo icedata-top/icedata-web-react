@@ -5,6 +5,7 @@ import Home from './pages/Home/index.jsx';
 import Overview from './pages/Overview/index.jsx';
 import NotFound from './pages/NotFound.jsx';
 import UnderDevelopment from './pages/UnderDevelopment.jsx';
+import Stash from './pages/Stash/index.jsx';
 import UniSeek from './pages/UniSeek/UniSeek.jsx';
 
 function AppLayout() {
@@ -24,6 +25,7 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="overview" element={<Overview />} />
           <Route path="uniseek" element={<UniSeek />} />
+          <Route path="stash" element={<Stash />} />
           <Route path="videos" element={<UnderDevelopment />} />
           <Route path="vocals" element={<UnderDevelopment />} />
           <Route path="producers" element={<UnderDevelopment />} />
