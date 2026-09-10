@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { Input, Spin, Statistic, message } from 'antd';
+import { useMeshParallax } from '../../hooks/useMeshParallax.js';
 import { ApiError } from '../../services/http/client.js';
 import { fetchHomeOverview, mapHomeDataToStats } from '../../services/Home/home.api.js';
 import './index.css';
@@ -22,6 +23,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const isZh = String(i18n?.language || 'zh').toLowerCase().startsWith('zh');
   const t = (zh, en) => (isZh ? zh : en);
+
+  useMeshParallax(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -47,49 +50,6 @@ export default function Home() {
 
     return () => {
       cancelled = true;
-    };
-  }, []);
-
-  /* 背景视差：前景不动，背景反向小幅平移；减少动态效果时跳过 */
-  useEffect(() => {
-    const root = document.documentElement;
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion) return undefined;
-
-    let targetX = 0;
-    let targetY = 0;
-    let currentX = 0;
-    let currentY = 0;
-    let rafId = 0;
-
-    const applyVars = () => {
-      root.style.setProperty('--mesh-nx', currentX.toFixed(4));
-      root.style.setProperty('--mesh-ny', currentY.toFixed(4));
-    };
-
-    const tick = () => {
-      currentX += (targetX - currentX) * 0.06;
-      currentY += (targetY - currentY) * 0.06;
-      applyVars();
-      rafId = window.requestAnimationFrame(tick);
-    };
-
-    const onMove = (event) => {
-      const { innerWidth: w, innerHeight: h } = window;
-      if (!w || !h) return;
-      targetX = (event.clientX / w) * 2 - 1;
-      targetY = (event.clientY / h) * 2 - 1;
-    };
-
-    applyVars();
-    rafId = window.requestAnimationFrame(tick);
-    window.addEventListener('pointermove', onMove, { passive: true });
-
-    return () => {
-      window.cancelAnimationFrame(rafId);
-      window.removeEventListener('pointermove', onMove);
-      root.style.removeProperty('--mesh-nx');
-      root.style.removeProperty('--mesh-ny');
     };
   }, []);
 

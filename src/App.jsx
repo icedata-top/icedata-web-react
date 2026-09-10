@@ -11,19 +11,19 @@ import UniSeek from './pages/UniSeek/UniSeek.jsx';
 
 function AppLayout() {
   const { pathname } = useLocation();
-  const isHome = pathname === '/';
+  const useMesh = pathname === '/' || pathname === '/about';
 
   useEffect(() => {
     const root = document.documentElement;
-    if (isHome) {
-      root.dataset.page = 'home';
+    if (useMesh) {
+      root.dataset.mesh = 'on';
     } else {
-      delete root.dataset.page;
+      delete root.dataset.mesh;
     }
     return () => {
-      delete root.dataset.page;
+      delete root.dataset.mesh;
     };
-  }, [isHome]);
+  }, [useMesh]);
 
   return (
     <>
