@@ -1,4 +1,5 @@
-import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import IcedataNavbar from './components/IcedataNavbar.jsx';
 import About from './pages/About/index.jsx';
 import Home from './pages/Home/index.jsx';
@@ -9,6 +10,21 @@ import Stash from './pages/Stash/index.jsx';
 import UniSeek from './pages/UniSeek/UniSeek.jsx';
 
 function AppLayout() {
+  const { pathname } = useLocation();
+  const isHome = pathname === '/';
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isHome) {
+      root.dataset.page = 'home';
+    } else {
+      delete root.dataset.page;
+    }
+    return () => {
+      delete root.dataset.page;
+    };
+  }, [isHome]);
+
   return (
     <>
       <IcedataNavbar />

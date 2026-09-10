@@ -1,10 +1,91 @@
 .home-page {
+  position: relative;
   min-height: calc(100vh - 88px);
   padding: 24px 20px 20px;
   max-width: 980px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+}
+
+/*
+ * 首页全视口弥散底：挂在 body 上，贯穿导航区与内容区；
+ * 上半保留色斑，下半淡入普通灰白底；色斑位置刻意不对称。
+ */
+html[data-page='home'] body {
+  background:
+    radial-gradient(ellipse 68% 52% at 8% 12%, rgba(67, 139, 237, 0.34), transparent 56%),
+    radial-gradient(ellipse 58% 46% at 78% 8%, rgba(118, 175, 242, 0.4), transparent 52%),
+    radial-gradient(ellipse 42% 38% at 42% 28%, rgba(186, 230, 253, 0.18), transparent 58%),
+    radial-gradient(ellipse 48% 36% at 92% 36%, rgba(56, 189, 198, 0.12), transparent 55%),
+    radial-gradient(ellipse 55% 40% at 18% 48%, rgba(147, 197, 253, 0.1), transparent 60%),
+    linear-gradient(
+      180deg,
+      #eef3fa 0%,
+      #f2f5f9 28%,
+      #f4f4f4 58%,
+      #f4f4f4 100%
+    );
+  background-size: 130% 110%, 115% 105%, 100% 100%, 110% 100%, 120% 100%, 100% 100%;
+  background-position: 0% 0%, 100% 0%, 40% 10%, 100% 30%, 0% 40%, 0 0;
+  background-attachment: fixed;
+  animation: home-mesh-drift 28s ease-in-out infinite alternate;
+}
+
+html[data-page='home'][data-theme='dark'] body {
+  background:
+    radial-gradient(ellipse 68% 52% at 8% 12%, rgba(67, 139, 237, 0.28), transparent 56%),
+    radial-gradient(ellipse 58% 46% at 78% 8%, rgba(118, 175, 242, 0.2), transparent 52%),
+    radial-gradient(ellipse 42% 38% at 42% 28%, rgba(30, 64, 120, 0.2), transparent 58%),
+    radial-gradient(ellipse 48% 36% at 92% 36%, rgba(45, 160, 170, 0.08), transparent 55%),
+    radial-gradient(ellipse 55% 40% at 18% 48%, rgba(59, 130, 246, 0.08), transparent 60%),
+    linear-gradient(
+      180deg,
+      #1a1c22 0%,
+      #1c1e24 28%,
+      #1e1f22 58%,
+      #1e1f22 100%
+    );
+  background-size: 130% 110%, 115% 105%, 100% 100%, 110% 100%, 120% 100%, 100% 100%;
+  background-position: 0% 0%, 100% 0%, 40% 10%, 100% 30%, 0% 40%, 0 0;
+  background-attachment: fixed;
+}
+
+@keyframes home-mesh-drift {
+  0% {
+    background-position: 0% 0%, 100% 2%, 38% 8%, 100% 28%, 2% 42%, 0 0;
+  }
+  50% {
+    background-position: 4% 4%, 92% 0%, 44% 14%, 96% 34%, 0% 38%, 0 0;
+  }
+  100% {
+    background-position: 2% 6%, 96% 6%, 36% 10%, 100% 32%, 6% 44%, 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-page='home'] body {
+    animation: none;
+  }
+}
+
+/* 首页：导航外层透明，卡片半透明毛玻璃浮在背景上 */
+html[data-page='home'] .icedata-navbar-wrap {
+  background: transparent;
+}
+
+html[data-page='home'] .icedata-navbar-card {
+  background: color-mix(in srgb, var(--navbar-bg) 42%, transparent) !important;
+  backdrop-filter: blur(14px) saturate(1.25);
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
+}
+
+html[data-page='home'] .icedata-navbar-card:hover {
+  background: color-mix(in srgb, var(--bg-hover) 55%, transparent) !important;
+}
+
+html[data-page='home'][data-theme='dark'] .icedata-navbar-wrap {
+  background: transparent;
 }
 
 .home-hero {
