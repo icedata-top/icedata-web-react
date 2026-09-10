@@ -9,10 +9,24 @@
 }
 
 /*
- * 首页全视口弥散底：挂在 body 上，贯穿导航区与内容区；
- * 上半保留色斑，下半淡入普通灰白底；色斑位置刻意不对称。
+ * 首页弥散底：独立背景层做轻微视差平移，前景内容不动，形成浅 3D 感。
+ * --mesh-nx/ny ∈ [-1, 1]；层略放大并外扩，避免平移露边。
  */
+html[data-page='home'] {
+  --mesh-nx: 0;
+  --mesh-ny: 0;
+}
+
 html[data-page='home'] body {
+  background: #f4f4f4;
+}
+
+html[data-page='home']::before {
+  content: '';
+  position: fixed;
+  inset: -12%;
+  z-index: -1;
+  pointer-events: none;
   background:
     radial-gradient(ellipse 68% 52% at 8% 12%, rgba(67, 139, 237, 0.34), transparent 56%),
     radial-gradient(ellipse 58% 46% at 78% 8%, rgba(118, 175, 242, 0.4), transparent 52%),
@@ -26,13 +40,19 @@ html[data-page='home'] body {
       #f4f4f4 58%,
       #f4f4f4 100%
     );
-  background-size: 130% 110%, 115% 105%, 100% 100%, 110% 100%, 120% 100%, 100% 100%;
-  background-position: 0% 0%, 100% 0%, 40% 10%, 100% 30%, 0% 40%, 0 0;
-  background-attachment: fixed;
-  animation: home-mesh-drift 28s ease-in-out infinite alternate;
+  transform: translate3d(
+    calc(var(--mesh-nx) * -56px),
+    calc(var(--mesh-ny) * -40px),
+    0
+  );
+  will-change: transform;
 }
 
 html[data-page='home'][data-theme='dark'] body {
+  background: #1e1f22;
+}
+
+html[data-page='home'][data-theme='dark']::before {
   background:
     radial-gradient(ellipse 68% 52% at 8% 12%, rgba(67, 139, 237, 0.28), transparent 56%),
     radial-gradient(ellipse 58% 46% at 78% 8%, rgba(118, 175, 242, 0.2), transparent 52%),
@@ -46,27 +66,6 @@ html[data-page='home'][data-theme='dark'] body {
       #1e1f22 58%,
       #1e1f22 100%
     );
-  background-size: 130% 110%, 115% 105%, 100% 100%, 110% 100%, 120% 100%, 100% 100%;
-  background-position: 0% 0%, 100% 0%, 40% 10%, 100% 30%, 0% 40%, 0 0;
-  background-attachment: fixed;
-}
-
-@keyframes home-mesh-drift {
-  0% {
-    background-position: 0% 0%, 100% 2%, 38% 8%, 100% 28%, 2% 42%, 0 0;
-  }
-  50% {
-    background-position: 4% 4%, 92% 0%, 44% 14%, 96% 34%, 0% 38%, 0 0;
-  }
-  100% {
-    background-position: 2% 6%, 96% 6%, 36% 10%, 100% 32%, 6% 44%, 0 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html[data-page='home'] body {
-    animation: none;
-  }
 }
 
 /* 首页：导航外层透明，卡片半透明毛玻璃浮在背景上 */
@@ -142,6 +141,7 @@ html[data-page='home'][data-theme='dark'] .icedata-navbar-wrap {
   margin-left: auto;
   margin-right: auto;
   overflow-x: auto;
+  overflow-y: visible;
 }
 
 .home-stats-scroll .ant-spin-nested-loading {
@@ -150,6 +150,7 @@ html[data-page='home'][data-theme='dark'] .icedata-navbar-wrap {
 
 .home-stats-scroll .ant-spin-container {
   min-height: 100px;
+  overflow: visible;
 }
 
 .home-stats-row {
@@ -157,11 +158,62 @@ html[data-page='home'][data-theme='dark'] .icedata-navbar-wrap {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
-  padding: 4px 0;
+  padding: 12px 0 8px;
 }
 
 .home-stat-item {
   text-align: center;
+  position: relative;
+  padding: 10px 6px 12px;
+  border-radius: var(--radius-card);
+}
+
+.home-stat-item--interactive {
+  padding-bottom: 36px;
+  transition: transform 0.22s ease;
+}
+
+.home-stat-item--interactive:hover,
+.home-stat-item--interactive:focus-within {
+  transform: translateY(-8px);
+}
+
+.home-stat-action {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translate(-50%, 6px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-decoration: none;
+  white-space: nowrap;
+  color: #fff;
+  background: var(--theme-primary);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    background-color 0.15s ease;
+}
+
+.home-stat-item--interactive:hover .home-stat-action,
+.home-stat-item--interactive:focus-within .home-stat-action {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+.home-stat-action:hover,
+.home-stat-action:focus-visible {
+  background: var(--theme-accent);
+  color: #fff;
 }
 
 .home-stat-item .ant-statistic-title {
@@ -180,6 +232,16 @@ html[data-page='home'][data-theme='dark'] .icedata-navbar-wrap {
   font-size: 14px;
   font-weight: 700;
   margin-left: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-stat-item--interactive {
+    transition: none;
+  }
+
+  .home-stat-action {
+    transition: none;
+  }
 }
 
 .home-footer {

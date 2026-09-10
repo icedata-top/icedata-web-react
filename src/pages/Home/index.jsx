@@ -8,6 +8,13 @@ import './index.css';
 
 const { Search } = Input;
 
+/** 可跳转的统计项 → 路由与按钮文案（记录跨度除外） */
+const STAT_LINKS = {
+  songs: { path: '/videos', labelZh: '查看歌曲', labelEn: 'View songs' },
+  artists: { path: '/vocals', labelZh: '查看歌手', labelEn: 'View vocals' },
+  creators: { path: '/producers', labelZh: '查看创作者', labelEn: 'View producers' },
+};
+
 export default function Home() {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
@@ -40,6 +47,49 @@ export default function Home() {
 
     return () => {
       cancelled = true;
+    };
+  }, []);
+
+  /* 背景视差：前景不动，背景反向小幅平移；减少动态效果时跳过 */
+  useEffect(() => {
+    const root = document.documentElement;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) return undefined;
+
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let rafId = 0;
+
+    const applyVars = () => {
+      root.style.setProperty('--mesh-nx', currentX.toFixed(4));
+      root.style.setProperty('--mesh-ny', currentY.toFixed(4));
+    };
+
+    const tick = () => {
+      currentX += (targetX - currentX) * 0.06;
+      currentY += (targetY - currentY) * 0.06;
+      applyVars();
+      rafId = window.requestAnimationFrame(tick);
+    };
+
+    const onMove = (event) => {
+      const { innerWidth: w, innerHeight: h } = window;
+      if (!w || !h) return;
+      targetX = (event.clientX / w) * 2 - 1;
+      targetY = (event.clientY / h) * 2 - 1;
+    };
+
+    applyVars();
+    rafId = window.requestAnimationFrame(tick);
+    window.addEventListener('pointermove', onMove, { passive: true });
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      window.removeEventListener('pointermove', onMove);
+      root.style.removeProperty('--mesh-nx');
+      root.style.removeProperty('--mesh-ny');
     };
   }, []);
 
@@ -79,14 +129,24 @@ export default function Home() {
                 creators: { title: t('收录创作者', 'Producers Indexed'), suffix: t('位', '') },
                 spanDays: { title: t('记录跨度', 'Timespan'), suffix: t('日', 'days') },
               }[item.key] ?? { title: item.title, suffix: item.suffix };
+              const link = STAT_LINKS[item.key];
+
               return (
-                <div key={item.key} className="home-stat-item">
+                <div
+                  key={item.key}
+                  className={`home-stat-item${link ? ' home-stat-item--interactive' : ''}`}
+                >
                   <Statistic
                     title={localized.title}
                     value={item.value}
                     suffix={localized.suffix}
                     valueStyle={{ color: 'var(--text)' }}
                   />
+                  {link ? (
+                    <Link to={link.path} className="home-stat-action">
+                      {t(link.labelZh, link.labelEn)}
+                    </Link>
+                  ) : null}
                 </div>
               );
             })}
