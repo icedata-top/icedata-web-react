@@ -4,6 +4,9 @@
  */
 .overview-page {
   --overview-page-top-offset: 88px;
+  /* 与右侧主列内边距对齐，保证筛选卡与「指标数值」顶边齐平 */
+  --overview-main-pad-top: 8px;
+  --overview-main-pad-x: 16px;
   height: calc(100vh - var(--overview-page-top-offset));
   max-height: calc(100vh - var(--overview-page-top-offset));
   overflow: hidden;
@@ -31,10 +34,15 @@
 .overview-sidebar {
   flex: 0 0 auto;
   width: 100%;
-  max-width: 320px;
+  /* 卡片仍约 320px；左侧内边距留给悬停阴影，避免被 layout overflow 裁切 */
+  max-width: calc(320px + var(--overview-main-pad-x));
   align-self: flex-start;
   z-index: 1;
   overflow: visible;
+  padding-top: var(--overview-main-pad-top);
+  padding-left: var(--overview-main-pad-x);
+  padding-bottom: 12px;
+  box-sizing: border-box;
 }
 
 .overview-panel--filter {
@@ -62,7 +70,9 @@
   gap: 16px;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 4px;
+  /* 左右预留空间，避免卡片悬停阴影被裁切（--shadow-card-hover 模糊约 24px） */
+  padding: var(--overview-main-pad-top) var(--overview-main-pad-x) 20px;
+  box-sizing: border-box;
   scrollbar-gutter: stable;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
