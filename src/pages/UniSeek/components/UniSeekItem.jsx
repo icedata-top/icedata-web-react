@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import { Card, Tag, Typography } from 'antd';
+import { splitHighlightParts } from '../highlightText.js';
 
 const { Text } = Typography;
 
@@ -10,10 +12,39 @@ const typeLabelMap = {
 
 /**
  * @param {object} props
- * @param {import('../../../services/UniSeek/uniseek.api.js').SeekItem} props.item
+ * @param {string} [props.text]
+ * @param {string} [props.keyword]
+ * @param {string} [props.className]
  */
-export default function UniSeekItem({ item }) {
+function HighlightText({ text, keyword, className }) {
+  const parts = useMemo(() => splitHighlightParts(text, keyword), [text, keyword]);
+
+  return (
+    <span className={className}>
+      {parts.map((part, index) =>
+        part.hit ? (
+          <mark key={index} className="uniseek-hit">
+            {part.text}
+          </mark>
+        ) : (
+          <span key={index}>{part.text}</span>
+        ),
+      )}
+    </span>
+  );
+}
+
+/**
+ * @param {object} props
+ * @param {import('../../../services/UniSeek/uniseek.api.js').SeekItem} props.item
+ * @param {string} [props.keyword] 产生当前结果列表的关键词
+ */
+export default function UniSeekItem({ item, keyword = '' }) {
   const tagText = typeLabelMap[item.type] ?? item.type;
+  const typeClass =
+    item.type === 'video' || item.type === 'vocal' || item.type === 'producer'
+      ? `uniseek-item-tag--${item.type}`
+      : '';
   const mediaTypeClass =
     item.type === 'video'
       ? 'uniseek-item-media--video'
@@ -33,14 +64,17 @@ export default function UniSeekItem({ item }) {
       </div>
 
       <div className="uniseek-item-top">
-        <Tag className="uniseek-item-tag">{tagText}</Tag>
+        <Tag className={`uniseek-item-tag ${typeClass}`}>{tagText}</Tag>
         <Text type="secondary" className="uniseek-item-id">
           ID {item.id}
         </Text>
       </div>
 
-      <div className="uniseek-item-title">{item.title}</div>
-      <div className="uniseek-item-subtitle">{item.subTitle}</div>
+      <HighlightText text={item.title} keyword={keyword} className="uniseek-item-title" />
+
+      {item.type !== 'video' && item.subTitle ? (
+        <HighlightText text={item.subTitle} keyword={keyword} className="uniseek-item-subtitle" />
+      ) : null}
 
       {item.type === 'video' ? (
         <div className="uniseek-item-meta">

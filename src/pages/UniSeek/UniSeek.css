@@ -1,6 +1,7 @@
 .uniseek-page {
+  position: relative;
   min-height: calc(100vh - 88px);
-  padding: 0 16px 20px;
+  padding: 8px 16px 32px;
   max-width: 1320px;
   margin: 0 auto;
   color: var(--text);
@@ -10,25 +11,54 @@
   position: sticky;
   top: 88px;
   z-index: 9;
-  padding: 0 0 12px;
+  padding: 4px 0 14px;
   background: transparent;
 }
 
-.uniseek-filter {
+.uniseek-filter-shell {
+  --uniseek-glass: 0;
   width: 100%;
   max-width: 860px;
   margin: 0 auto;
-  padding: 10px 12px;
-  border-radius: 14px;
+}
+
+.uniseek-filter {
+  position: relative;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid transparent;
+  background: transparent;
+  box-shadow: none;
+  isolation: isolate;
+}
+
+/* 毛玻璃卡片层：置顶时透明，随 --uniseek-glass 渐显 */
+.uniseek-filter::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
   border: 1px solid rgba(15, 23, 42, 0.08);
-  background: rgba(255, 255, 255, 0.58);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--card-bg) 58%, transparent);
+  box-shadow: var(--shadow-card);
+  -webkit-backdrop-filter: blur(calc(14px * var(--uniseek-glass))) saturate(calc(1 + 0.2 * var(--uniseek-glass)));
+  backdrop-filter: blur(calc(14px * var(--uniseek-glass))) saturate(calc(1 + 0.2 * var(--uniseek-glass)));
+  opacity: var(--uniseek-glass);
+  /* 跟手滚动；离开顶区后略带回弹感的缓动只体现在 JS ease-out */
+  transition: opacity 0.05s linear;
+  pointer-events: none;
+}
+
+.uniseek-filter > * {
+  position: relative;
+  z-index: 1;
 }
 
 .uniseek-search-input .ant-input {
   color: var(--text);
-  background: var(--card-bg);
+  background: color-mix(in srgb, var(--card-bg) 82%, transparent);
   border-color: var(--border);
 }
 
@@ -38,15 +68,67 @@
   background: var(--theme-primary) !important;
 }
 
+.uniseek-search-input .ant-input-group-addon .ant-btn:hover,
+.uniseek-search-input .ant-input-group-addon .ant-btn:focus {
+  color: #fff !important;
+  border-color: var(--theme-accent) !important;
+  background: var(--theme-accent) !important;
+}
+
 .uniseek-result-wrap {
-  margin-top: 4px;
+  margin-top: 2px;
+}
+
+.uniseek-result-meta {
+  margin: 4px 4px 16px;
+}
+
+.uniseek-result-count {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--text) 55%, transparent);
+}
+
+.uniseek-result-count em {
+  margin: 0 0.15em;
+  font-style: normal;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.15em;
+  color: var(--highlight-blue);
+}
+
+.uniseek-result-count--empty {
+  color: color-mix(in srgb, var(--text) 45%, transparent);
+}
+
+.uniseek-empty {
+  padding: 48px 12px 64px;
+  display: flex;
+  justify-content: center;
 }
 
 .uniseek-item-card {
   border-radius: 14px !important;
-  background: var(--card-bg) !important;
-  border: 1px solid var(--border) !important;
+  background: color-mix(in srgb, var(--card-bg) 78%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent) !important;
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
   cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.uniseek-item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+  background: color-mix(in srgb, var(--bg-hover) 88%, transparent) !important;
 }
 
 .uniseek-item-card .ant-card-body {
@@ -114,18 +196,43 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
   margin-bottom: 8px;
 }
 
 .uniseek-item-tag {
   margin-inline-end: 0 !important;
+  border-radius: 6px !important;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Chip：三类实体各用一枚高亮色 */
+.uniseek-item-tag--video {
+  color: var(--highlight-blue) !important;
+  background: color-mix(in srgb, var(--highlight-blue) 14%, transparent) !important;
+  border-color: color-mix(in srgb, var(--highlight-blue) 38%, transparent) !important;
+}
+
+.uniseek-item-tag--vocal {
+  color: var(--highlight-violet) !important;
+  background: color-mix(in srgb, var(--highlight-violet) 14%, transparent) !important;
+  border-color: color-mix(in srgb, var(--highlight-violet) 38%, transparent) !important;
+}
+
+.uniseek-item-tag--producer {
+  color: var(--highlight-cyan) !important;
+  background: color-mix(in srgb, var(--highlight-cyan) 14%, transparent) !important;
+  border-color: color-mix(in srgb, var(--highlight-cyan) 38%, transparent) !important;
 }
 
 .uniseek-item-id {
   font-size: 12px;
+  flex-shrink: 0;
 }
 
 .uniseek-item-title {
+  display: block;
   font-size: 15px;
   font-weight: 600;
   line-height: 1.5;
@@ -134,27 +241,39 @@
 }
 
 .uniseek-item-subtitle {
+  display: block;
   font-size: 13px;
   opacity: 0.8;
   margin-bottom: 10px;
 }
 
+.uniseek-hit {
+  color: var(--highlight-orange);
+  font-weight: 700;
+  background: none;
+  padding: 0;
+}
+
 .uniseek-item-meta {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   font-size: 12px;
   opacity: 0.9;
 }
 
-[data-theme='dark'] .uniseek-item-card {
-  background: var(--card-bg) !important;
-  border-color: #343840 !important;
+[data-theme='dark'] .uniseek-filter::before {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, var(--card-bg) 52%, transparent);
 }
 
-[data-theme='dark'] .uniseek-item-tag.ant-tag {
-  color: var(--text) !important;
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.16) !important;
+[data-theme='dark'] .uniseek-item-card {
+  background: color-mix(in srgb, var(--card-bg) 72%, transparent) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme='dark'] .uniseek-item-card:hover {
+  background: color-mix(in srgb, var(--bg-hover) 82%, transparent) !important;
 }
 
 [data-theme='dark'] .uniseek-item-id,
@@ -170,9 +289,4 @@
 
 [data-theme='dark'] .uniseek-item-media-placeholder {
   background: linear-gradient(135deg, #2b303a 0%, #242933 100%);
-}
-
-[data-theme='dark'] .uniseek-filter {
-  border-color: rgba(255, 255, 255, 0.14);
-  background: rgba(24, 28, 34, 0.56);
 }

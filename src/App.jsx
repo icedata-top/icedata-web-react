@@ -11,7 +11,7 @@ import UniSeek from './pages/UniSeek/UniSeek.jsx';
 
 function AppLayout() {
   const { pathname } = useLocation();
-  const useMesh = pathname === '/' || pathname === '/about';
+  const useMesh = pathname === '/' || pathname === '/about' || pathname === '/uniseek';
 
   useEffect(() => {
     const root = document.documentElement;
