@@ -16,7 +16,7 @@ import { postJson } from '../http/client.js';
  *
  * payload 示例：
  * - video: { bvid, play, favorite, like, coin, publishDate, durationSec, producerId, vocalIdList }
- * - vocal: { alias, songCount, followerCount, representativeWorks }
+ * - vocal: { alias, songCount, representativeWorks }
  * - producer: { uid, fanCount, totalView, videoCount, recentWork }
  */
 
@@ -90,7 +90,6 @@ const MOCK_VOCAL_LUO_TIANYI = {
   subTitle: 'Vsinger旗下虚拟歌手，世界首位中文V家虚拟歌手',
   payload: {
     alias: ['Luo Tianyi'],
-    followerCount: 5578032,
     songCount: 4600,
     representativeWorks: [
       { id: '2129461', title: '普通DISCO' },
@@ -99,7 +98,6 @@ const MOCK_VOCAL_LUO_TIANYI = {
   },
   // 兼容字段（页面当前仍在读取）
   alias: ['Luo Tianyi'],
-  followerCount: 5578032,
   songCount: 4600,
   representativeWorks: [
     { id: '2129461', title: '普通DISCO' },
@@ -238,13 +236,11 @@ function matchAndRankItem(item, keyword) {
  *   payload: {
  *     alias?: string[],
  *     songCount?: number,
- *     followerCount?: number,
  *     representativeWorks?: Array<{ id: string|number, title: string }>,
  *   },
  *   // 兼容字段（后续前端迁移完成后可移除）
  *   alias?: string[],
  *   songCount?: number,
- *   followerCount?: number,
  *   representativeWorks?: Array<{ id: string|number, title: string }>,
  * }} SeekVocalItem
  */

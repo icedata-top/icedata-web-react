@@ -262,6 +262,19 @@
   opacity: 0.9;
 }
 
+.uniseek-item-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  cursor: help;
+}
+
+.uniseek-item-stat .anticon {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
 [data-theme='dark'] .uniseek-filter::before {
   border-color: rgba(255, 255, 255, 0.12);
   background: color-mix(in srgb, var(--card-bg) 52%, transparent);
