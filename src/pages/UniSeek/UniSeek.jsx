@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Empty, Masonry, Spin, message } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { useMeshParallax } from '../../hooks/useMeshParallax.js';
 import { ApiError } from '../../services/http/client.js';
@@ -46,6 +47,9 @@ function useFilterGlassOnScroll(targetRef) {
 }
 
 export default function UniSeek() {
+  const { i18n } = useTranslation();
+  const isZh = String(i18n?.language || 'zh').toLowerCase().startsWith('zh');
+  const t = (zh, en) => (isZh ? zh : en);
   const [searchParams, setSearchParams] = useSearchParams();
   const [keyword, setKeyword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -124,10 +128,20 @@ export default function UniSeek() {
           <div className="uniseek-result-meta" aria-live="polite">
             {items.length ? (
               <p className="uniseek-result-count">
-                找到 <em>{items.length}</em> 条结果
+                {isZh ? (
+                  <>
+                    找到 <em>{items.length}</em> 条结果
+                  </>
+                ) : (
+                  <>
+                    Found <em>{items.length}</em> {items.length === 1 ? 'result' : 'results'}
+                  </>
+                )}
               </p>
             ) : (
-              <p className="uniseek-result-count uniseek-result-count--empty">未找到匹配结果</p>
+              <p className="uniseek-result-count uniseek-result-count--empty">
+                {t('未找到匹配结果', 'No matching results')}
+              </p>
             )}
           </div>
         ) : null}

@@ -14,9 +14,9 @@ import { splitHighlightParts } from '../highlightText.js';
 const { Text } = Typography;
 
 const typeLabelMap = {
-  video: '歌曲',
-  vocal: '虚拟歌手',
-  producer: '创作者',
+  video: { zh: '歌曲', en: 'Song' },
+  vocal: { zh: '虚拟歌手', en: 'Vocal' },
+  producer: { zh: '创作者', en: 'Producer' },
 };
 
 /**
@@ -74,8 +74,10 @@ export default function UniSeekItem({ item, keyword = '' }) {
   const { i18n } = useTranslation();
   const isZh = String(i18n?.language || 'zh').toLowerCase().startsWith('zh');
   const numFormat = isZh ? NUMBER_FORMAT.ZH : NUMBER_FORMAT.EN;
+  const t = (zh, en) => (isZh ? zh : en);
 
-  const tagText = typeLabelMap[item.type] ?? item.type;
+  const typeLabels = typeLabelMap[item.type];
+  const tagText = typeLabels ? t(typeLabels.zh, typeLabels.en) : item.type;
   const typeClass =
     item.type === 'video' || item.type === 'vocal' || item.type === 'producer'
       ? `uniseek-item-tag--${item.type}`
