@@ -1,6 +1,7 @@
 /**
  * 首页概览 MOCK（无后端时模拟 API 返回结构）
- * 字段与后端约定：前端展示「歌曲」对应 video，「创作者」对应 user（见 README 术语）
+ * 字段与后端约定：前端展示「歌曲」对应 video，「创作者」前端约定为 producer；
+ * 后端契约暂仍可能返回 user* 字段（如 userCount），由本层映射为创作者展示（见 README 术语）
  */
 import { isMockEnv } from '../../config/runtimeEnv.js';
 import { postJson } from '../http/client.js';

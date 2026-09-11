@@ -24,10 +24,31 @@ export const VIDEO_TREND_METRICS = [
 ];
 
 /**
- * @param {object} props
- * @param {TrendDay[]} props.trend
+ * 中术300 七条系列固定色板：自蓝起绕回，不含青/绿
+ * 顺序对齐 VIDEO_TREND_METRICS
  */
-function buildLineSpec(tab, trend) {
+const VIDEO_STATS_HIGHLIGHT_VARS = [
+  '--highlight-blue',
+  '--highlight-indigo',
+  '--highlight-violet',
+  '--highlight-faint-purple',
+  '--highlight-red',
+  '--highlight-orange',
+  '--highlight-yellow',
+];
+
+function readVideoStatsPalette() {
+  if (typeof document === 'undefined') return [];
+  const styles = getComputedStyle(document.documentElement);
+  return VIDEO_STATS_HIGHLIGHT_VARS.map((name) => styles.getPropertyValue(name).trim()).filter(Boolean);
+}
+
+/**
+ * @param {string} tab
+ * @param {TrendDay[]} trend
+ * @param {string[]} [videoStatsColors]
+ */
+function buildLineSpec(tab, trend, videoStatsColors = []) {
   if (!trend?.length) {
     return null;
   }
@@ -98,6 +119,7 @@ function buildLineSpec(tab, trend) {
     xField: 'date',
     yField: 'value',
     seriesField: 'series',
+    ...(videoStatsColors.length === VIDEO_TREND_METRICS.length ? { color: videoStatsColors } : {}),
     point: { visible: true },
     line: { style: { lineWidth: 1.5 } },
     tooltip: { visible: true },
@@ -121,7 +143,11 @@ export default function OverviewTrendChart({ trend, activeTab = TAB_NEW_VIDEO, o
   const chartRef = useRef(null);
   const isDark = useDocThemeDark();
 
-  const spec = useMemo(() => buildLineSpec(activeTab, trend), [activeTab, trend]);
+  const videoStatsColors = useMemo(() => readVideoStatsPalette(), [isDark]);
+  const spec = useMemo(
+    () => buildLineSpec(activeTab, trend, videoStatsColors),
+    [activeTab, trend, videoStatsColors],
+  );
 
   useEffect(() => {
     const el = hostRef.current;

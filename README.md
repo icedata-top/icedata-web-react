@@ -85,10 +85,16 @@ icedata-web-react/
 │   │   ├── Home/
 │   │   ├── About/
 │   │   ├── Overview/
+│   │   ├── UniSeek/           # 统一搜索结果页（独立 Item，不复用列表 Item）
+│   │   ├── video/             # 歌曲：VideoList / VideoDetail
+│   │   ├── vocal/             # 虚拟歌手：VocalList / VocalDetail
+│   │   ├── producer/          # 创作者：ProducerList / ProducerDetail
 │   │   └── …
 │   ├── services/              # API / MOCK
+│   ├── hooks/
 │   └── styles/
-│       └── global.css         # 全局主题与卡片变量
+│       ├── global.css         # 全局主题与卡片变量
+│       └── meshBackground.css # 首页 / 关于弥散背景
 └── tests/
 ```
 
@@ -158,8 +164,69 @@ icedata-web-react/
 
 ## 术语约定
 
-- 本项目前端显示的是“歌曲”，但是歌曲本质都是带有 MV 的视频，所以变量命名和后端全部使用 video
-- 类似地，前端显示的是“创作者”，但实际指的是用户，使用 user
+- 本项目前端显示的是「歌曲」，但歌曲本质都是带有 MV 的视频，所以变量命名和后端全部使用 `video`
+- 前端显示的是「创作者」，**前端约定与领域命名使用 `producer`**（路由、UniSeek 类型、文案等）
+- **后端与 HTTP 契约暂时不改**，接口字段与指标名仍可能使用 `user`（如 `userCount`、`activeUserCount`）；前端展示层映射为「创作者 / Producer」，待后端对齐后再统一改名
+
+## 路由与页面约定
+
+导航进入「歌曲 / 虚拟歌手 / 创作者」均为**列表页**（复数路径）；从列表或 UniSeek 结果点击某一 Item，进入对应**详情页**（单数路径 + ID）。  
+详情 ID 使用**路径参数**（如 `/video/123456`），**不使用**查询串（避免 `/video?id=123456`）。
+
+### URL 一览
+
+| 页面 | URL | 说明 |
+|------|-----|------|
+| 歌曲列表 | `/videos` | 导航「歌曲」入口 |
+| 歌曲详情 | `/video/:id` | `:id` 为作品标识（如 aid；具体以详情契约为准） |
+| 虚拟歌手列表 | `/vocals` | 导航「虚拟歌手」入口 |
+| 虚拟歌手详情 | `/vocal/:id` | `:id` 为虚拟歌手标识 |
+| 创作者列表 | `/producers` | 导航「创作者」入口 |
+| 创作者详情 | `/producer/:id` | `:id` 为创作者标识（如 uid） |
+| 统一搜索 | `/uniseek` | 首页搜索跳转；可带 `?keyword=` |
+| 总览 | `/overview` | |
+| 关于 | `/about` | |
+| 收藏夹（隐藏） | `/stash` | 无导航入口 |
+
+示例：
+
+```text
+/videos
+/video/2129461
+/vocals
+/vocal/luotianyi
+/producers
+/producer/123456
+/uniseek?keyword=普通DISCO
+```
+
+### 页面关系
+
+```text
+导航栏
+  ├─ 歌曲      → /videos         （VideoList）
+  ├─ 虚拟歌手  → /vocals         （VocalList）
+  └─ 创作者    → /producers      （ProducerList）
+
+列表页 Item 点击 → /video/:id · /vocal/:id · /producer/:id  （Detail）
+
+首页搜索 → /uniseek?keyword=…   （UniSeek 结果页）
+  └─ 结果 Item 点击 → 同上详情页 URL
+```
+
+### 组件约定
+
+- 列表页 Item 与 UniSeek 结果 Item **不复用**：搜索结果有独立展示与排序语义，目录在 `src/pages/UniSeek/components/`；列表 Item 归属各自 `video` / `vocal` / `producer` 页面目录。
+- 详情页为两边共用落点：列表与 UniSeek 均可 `Link` / `navigate` 到 `/video/:id` 等形式。
+- 源码目录（占位已建，路由待挂载）：
+
+```text
+src/pages/video/VideoList | VideoDetail
+src/pages/vocal/VocalList | VocalDetail
+src/pages/producer/ProducerList | ProducerDetail
+```
+
+> 说明：导航列表路径与现有 `menuPaths.js`（`/videos`、`/vocals`、`/producers`）一致；实现时挂上详情路由 `/video/:id` 等即可。
 
 ## 使用的第三方组件/素材
 

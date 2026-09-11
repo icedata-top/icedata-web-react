@@ -2,11 +2,19 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { Input, Spin, Statistic, message } from 'antd';
+import { useMeshParallax } from '../../hooks/useMeshParallax.js';
 import { ApiError } from '../../services/http/client.js';
 import { fetchHomeOverview, mapHomeDataToStats } from '../../services/Home/home.api.js';
 import './index.css';
 
 const { Search } = Input;
+
+/** 可跳转的统计项 → 路由与按钮文案（记录跨度除外） */
+const STAT_LINKS = {
+  songs: { path: '/videos', labelZh: '查看歌曲', labelEn: 'View songs' },
+  artists: { path: '/vocals', labelZh: '查看歌手', labelEn: 'View vocals' },
+  creators: { path: '/producers', labelZh: '查看创作者', labelEn: 'View producers' },
+};
 
 export default function Home() {
   const { i18n } = useTranslation();
@@ -15,6 +23,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const isZh = String(i18n?.language || 'zh').toLowerCase().startsWith('zh');
   const t = (zh, en) => (isZh ? zh : en);
+
+  useMeshParallax(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -79,14 +89,24 @@ export default function Home() {
                 creators: { title: t('收录创作者', 'Producers Indexed'), suffix: t('位', '') },
                 spanDays: { title: t('记录跨度', 'Timespan'), suffix: t('日', 'days') },
               }[item.key] ?? { title: item.title, suffix: item.suffix };
+              const link = STAT_LINKS[item.key];
+
               return (
-                <div key={item.key} className="home-stat-item">
+                <div
+                  key={item.key}
+                  className={`home-stat-item${link ? ' home-stat-item--interactive' : ''}`}
+                >
                   <Statistic
                     title={localized.title}
                     value={item.value}
                     suffix={localized.suffix}
                     valueStyle={{ color: 'var(--text)' }}
                   />
+                  {link ? (
+                    <Link to={link.path} className="home-stat-action">
+                      {t(link.labelZh, link.labelEn)}
+                    </Link>
+                  ) : null}
                 </div>
               );
             })}

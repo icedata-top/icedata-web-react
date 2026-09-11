@@ -17,10 +17,26 @@
   --shadow-card: 0 1px 8px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
   --shadow-card-hover: 0 10px 24px var(--shadow);
 
+  /** 高亮色：用于 Chip、Alter、图表系列 等需要突出显示的元素 */
+  --highlight-red: #f05454;
+  --highlight-orange: #ff9745;
+  --highlight-yellow: #e6c837;
+  --highlight-green: #46b970;
+  --highlight-cyan: #33b9c9;
+  --highlight-blue: #438bed; 
+  --highlight-indigo: #6355d1;
+  --highlight-violet: #9d5ed8;
+  --highlight-faint-purple: #b089d0;
+
   /* 同环比涨跌：上升红、下降绿（与 A 股等常见行情色一致） */
-  --trend-up: #cf1322;
-  --trend-down: #3f8600;
+  --trend-up: var(--highlight-red);
+  --trend-down: var(--highlight-green);
   --trend-flat: #8c8c8c;
+
+  /* 滚动条（与总览主列一致） */
+  --scrollbar-size: 8px;
+  --scrollbar-thumb: rgba(15, 23, 42, 0.22);
+  --scrollbar-thumb-hover: rgba(15, 23, 42, 0.38);
 }
 
 [data-theme='dark'] {
@@ -37,9 +53,24 @@
   --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.2);
   --shadow-card-hover: 0 10px 24px var(--shadow);
 
-  --trend-up: #ff7875;
-  --trend-down: #95de64;
+  /** 高亮色（夜间）：在深底上略提亮、饱和度适中，与浅色同色相 */
+  --highlight-red: #ff7875;
+  --highlight-orange: #ffa940;
+  --highlight-yellow: #f0d060;
+  --highlight-green: #73d13d;
+  --highlight-cyan: #36cfc9;
+  --highlight-blue: #69b1ff;
+  --highlight-indigo: #8578e0;
+  --highlight-violet: #b37feb;
+  --highlight-faint-purple: #c4a8d4;
+
+  /* 同环比涨跌：与高亮色对齐 */
+  --trend-up: var(--highlight-red);
+  --trend-down: var(--highlight-green);
   --trend-flat: #8c8c8c;
+
+  --scrollbar-thumb: rgba(255, 255, 255, 0.22);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.4);
 }
 
 body {
@@ -48,6 +79,35 @@ body {
     Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
   background: var(--bg);
   color: var(--text);
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
 }
 
 /**

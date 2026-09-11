@@ -1,11 +1,14 @@
 import { GithubOutlined, GlobalOutlined, TeamOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { useMeshParallax } from '../../hooks/useMeshParallax.js';
 import './index.css';
 
 export default function About() {
   const { i18n } = useTranslation();
   const isZh = String(i18n?.language || 'zh').toLowerCase().startsWith('zh');
   const t = (zh, en) => (isZh ? zh : en);
+
+  useMeshParallax(true);
 
   return (
     <main className="about-page">

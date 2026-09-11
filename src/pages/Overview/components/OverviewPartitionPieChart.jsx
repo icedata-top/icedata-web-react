@@ -13,10 +13,30 @@ const { Text } = Typography;
 const SCOPE_ALL = 'all';
 const SCOPE_NEW = 'new';
 
+/** 与 global.css 高亮色变量顺序一致；分区数超过色板长度时循环取色 */
+const HIGHLIGHT_CSS_VARS = [
+  '--highlight-red',
+  '--highlight-orange',
+  '--highlight-yellow',
+  '--highlight-green',
+  '--highlight-cyan',
+  '--highlight-blue',
+  '--highlight-indigo',
+  '--highlight-violet',
+  '--highlight-faint-purple',
+];
+
+function readHighlightPalette() {
+  if (typeof document === 'undefined') return [];
+  const styles = getComputedStyle(document.documentElement);
+  return HIGHLIGHT_CSS_VARS.map((name) => styles.getPropertyValue(name).trim()).filter(Boolean);
+}
+
 /**
  * @param {PartitionSubmissionRow[]} rows
+ * @param {string[]} colorRange
  */
-function buildPieSpec(rows) {
+function buildPieSpec(rows, colorRange) {
   if (!rows?.length) return null;
 
   const values = rows.map((r) => ({
@@ -24,12 +44,36 @@ function buildPieSpec(rows) {
     value: r.count,
   }));
 
+  const palette =
+    colorRange.length > 0
+      ? Array.from({ length: values.length }, (_, i) => colorRange[i % colorRange.length])
+      : undefined;
+
   return {
     background: 'transparent',
     type: 'pie',
     data: [{ id: 'partition', values }],
     categoryField: 'name',
     valueField: 'value',
+    outerRadius: 0.8,
+    innerRadius: 0.5,
+    padAngle: 0.6,
+    ...(palette ? { color: palette } : {}),
+    pie: {
+      style: {
+        cornerRadius: 10,
+      },
+      state: {
+        hover: {
+          outerRadius: 0.85,
+          stroke: '#000',
+        },
+        selected: {
+          outerRadius: 0.85,
+          stroke: '#000',
+        },
+      },
+    },
     legends: {
       visible: true,
       orient: 'right',
@@ -55,7 +99,8 @@ export default function OverviewPartitionPieChart({ rows, scope = SCOPE_ALL, onS
   const isDark = useDocThemeDark();
 
   const activeRows = rows ?? [];
-  const spec = useMemo(() => buildPieSpec(activeRows), [activeRows]);
+  const colorRange = useMemo(() => readHighlightPalette(), [isDark]);
+  const spec = useMemo(() => buildPieSpec(activeRows, colorRange), [activeRows, colorRange]);
 
   useEffect(() => {
     const el = hostRef.current;
